@@ -9,6 +9,7 @@ packages = [{include = "eink_screen"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
+freetype-py = "^2.3.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -16,6 +17,7 @@ mpremote = "^0.4.0"
 mypy = "^0.991"
 black = "^22.12.0"
 esptool = "^4.4"
+rshell = "^0.0.31"
 
 [build-system]
 requires = ["poetry-core"]

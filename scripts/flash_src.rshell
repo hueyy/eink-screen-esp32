@@ -1,0 +1,2 @@
+connect serial /dev/ttyACM0;
+rsync -m src/ /pyboard/;

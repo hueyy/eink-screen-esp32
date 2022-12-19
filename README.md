@@ -5,7 +5,9 @@
 1. [Installing Poetry dependencies](#install-poetry-dependencies)
 2. [Install MicroPython firmware](#install-micropython-firmware)
 3. Understand the [file structure](#file-structure)
-4. Use either [WebREPL](#webrepl) or [RShell](#rshell)
+4. Runc ode with [RShell](#rshell)
+
+Chip is ESP32-D0WDQ6 (revision v1.0)
 
 ### Install Poetry dependencies
 
@@ -32,7 +34,7 @@ python -m serial.tools.list_ports
 Example output:
 
 ```bash
-/dev/ttyUSB0
+/dev/ttyACM0
 1 ports found
 ```
 
@@ -53,8 +55,8 @@ Download the [latest stable MicroPython firmware](https://micropython.org/downlo
 Proceed to install the new firmware:
 
 ```bash
-esptool.py --port /dev/ttyUSB0 erase_flash
-esptool.py --chip esp32 --port /dev/ttyUSB0 write_flash -z 0x1000 ~/Downloads/esp32-20220618-v1.19.1.bin
+esptool.py --port /dev/ttyACM0 erase_flash
+esptool.py --chip esp32 --port /dev/ttyACM0 write_flash -z 0x1000 ~/Downloads/esp32-20220618-v1.19.1.bin
 ```
 
 ### File structure
@@ -73,8 +75,49 @@ Use <kbd>Ctrl</kbd><kbd>]</kbd> to exit the REPL.
 
 ```bash
 mpremote run src/main.py
+```
 
-mpremote cp -r src/ .
+### RShell
+
+You can use [rshell](https://github.com/dhylands/rshell) to run Python scripts on the Watchy.
+
+```bash
+poetry shell
+rshell
+```
+
+And then within rshell's interactive prompt, connect to the Watchy:
+
+```bash
+connect serial /dev/ttyACM0
+```
+
+You can then access the Watchy's filesystem:
+
+```bash
+ls /pyboard
+cp src/main.py /pyboard/
+```
+
+Or even edit a file directly on the Watchy:
+
+```bash
+edit /pyboard/main.py
+```
+
+You can get a Python REPL prompt over the serial port:
+
+```shell
+repl
+```
+
+The controls are emacs-style, so use `[C-x]`, i.e. <kbd>Ctrl-A</kbd> <kbd>Ctrl-X</kbd>.
+
+Useful development commands:
+
+```bash
+./scripts/flash_micropython.sh # to re-flash micropython firmware if the MCU freezes up
+./scripts/flash_src.sh # to transfer and run new files in a single command
 ```
 
 ### Restarting
