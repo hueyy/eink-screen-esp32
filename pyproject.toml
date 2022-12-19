@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "eink-screen"
+version = "0.1.0"
+description = ""
+authors = ["Huey <hello@huey.xyz>"]
+license = "EUPL-1.2"
+readme = "README.md"
+packages = [{include = "eink_screen"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[tool.poetry.group.dev.dependencies]
+mpremote = "^0.4.0"
+mypy = "^0.991"
+black = "^22.12.0"
+esptool = "^4.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
