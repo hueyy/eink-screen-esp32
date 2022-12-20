@@ -39,7 +39,7 @@ import sys
 import os
 
 try:
-    import freetype
+    import freetype  # type: ignore
 except ModuleNotFoundError:
     print("font_to_py requires the freetype library. Please see FONT_TO_PY.md.")
     sys.exit(1)
@@ -772,7 +772,7 @@ if __name__ == "__main__":
         cs = {c for c in cset if c.isprintable() or (0xE000 <= ord(c) <= 0xF8FF)} - {
             args.errchar
         }
-        cs = sorted(list(cs))
+        cs = sorted(list(cs))  # type: ignore
         cset = "".join(cs)  # Back to string
         bitmapped = os.path.splitext(args.infile)[1].upper() in (".BDF", ".PCF")
         if bitmapped:

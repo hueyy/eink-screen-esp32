@@ -5,7 +5,7 @@
 1. [Installing Poetry dependencies](#install-poetry-dependencies)
 2. [Install MicroPython firmware](#install-micropython-firmware)
 3. Understand the [file structure](#file-structure)
-4. Runc ode with [RShell](#rshell)
+4. Run code with [RShell](#rshell)
 
 Chip is ESP32-D0WDQ6 (revision v1.0)
 
@@ -15,6 +15,7 @@ This project uses the Poetry dependency manager. Install that and run the follow
 
 ```bash
 poetry install
+poetru run mpremote mip install aioble
 ```
 
 ### Install MicroPython firmware
@@ -72,6 +73,11 @@ There are 2 main MicroPython scripts:
 You can use [mpremote](https://docs.micropython.org/en/latest/reference/mpremote.html) to transfer code and use a REPL.
 
 Use <kbd>Ctrl</kbd><kbd>]</kbd> to exit the REPL.
+
+```bash
+mpremote mount src
+import main
+```
 
 ```bash
 mpremote run src/main.py

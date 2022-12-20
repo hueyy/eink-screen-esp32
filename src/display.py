@@ -1,8 +1,8 @@
-from constants import BLACK, WHITE
+from lib.constants import BLACK, WHITE
+from lib.epaper7in5_V2 import EPD
+from lib.writer import Writer
 from machine import Pin, SPI
 import framebuf
-from lib.writer import Writer
-from lib.epaper7in5_V2 import EPD
 
 
 class Display:
@@ -30,7 +30,7 @@ class Display:
             framebuf.MONO_HLSB,
         )
 
-    def update(self, buffer: bytearray | None = None, mirror_y=True, partial=False):
+    def update(self, buffer: bytearray | None = None):
         target_buffer = self.buffer if buffer is None else buffer
         self.epd.display_frame(target_buffer)
 
@@ -40,3 +40,23 @@ class Display:
 
     def clear(self):
         self.epd.clear()
+
+    def display_text(
+        self,
+        text: str,
+        x: int,
+        y: int,
+        font,
+        background_colour: int,
+        text_colour: int,
+    ):
+        wri = Writer(
+            self.framebuf,
+            font,
+            self.MAX_WIDTH,
+            self.MAX_HEIGHT,
+            background_colour,
+            text_colour,
+        )
+        wri.set_textpos(self.framebuf, y, x)
+        wri.printstring(text)
