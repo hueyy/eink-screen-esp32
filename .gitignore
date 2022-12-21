@@ -2,3 +2,4 @@
 .gitsecret/keys/random_seed
 !*.secret
 src/lib/secrets.py
+/src/test.py

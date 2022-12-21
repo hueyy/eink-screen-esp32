@@ -1,21 +1,32 @@
-# from display import Display
-# import assets.fonts.fira_sans_bold_32 as fira_sans_bold_32
-# import assets.fonts.fira_sans_regular_24 as fira_sans_regular_24
+import gc
 
 
-# d = Display()
-# d.framebuf.fill(1)
-# d.display_text("Ministry of Floof Singapore", 40, 40, fira_sans_bold_32, 1, 0)
-# d.display_text("@mof_sg@kopiti.am", 40, 80, fira_sans_regular_24, 1, 0)
+class Device:
+    def __init__(self):
+        self.mode = 0
 
-# d.display_text("henlo world", 40, 135, fira_sans_regular_24, 1, 0)
+    def top_toot_mode(self, tag: str):
+        from lib.wifi import connect_to_wifi
 
-# d.display_text("17 December 2022, 8:04 AM", 40, 170, fira_sans_regular_24, 1, 0)
+        if not connect_to_wifi():
+            print("Failed to connect to WiFi")
+            return
 
-# d.update()
-# d.epd.sleep()
+        from lib.data import get_latest_toot_by_tag
 
-from lib.bt import BT
+        toot = get_latest_toot_by_tag(tag)
+        print("Got toot:", toot)
 
-b = BT()
-b.wait_for_connection()
+        if toot is not None:
+            from lib.display import Display
+
+            display = Display()
+            display.init_buffer()
+            display.display_toot(toot)
+            display.sleep()
+
+    def test_bluetooth(self):
+        from lib.bt import BT
+
+        b = BT()
+        b.wait_for_connection()

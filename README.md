@@ -15,7 +15,7 @@ This project uses the Poetry dependency manager. Install that and run the follow
 
 ```bash
 poetry install
-poetru run mpremote mip install aioble
+poetry run mpremote mip install aioble 
 ```
 
 ### Install MicroPython firmware
