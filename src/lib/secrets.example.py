@@ -1,0 +1,1 @@
+WIFI_NETWORKS = [("SSID", "PASSWORD")]
