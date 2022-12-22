@@ -26,7 +26,7 @@ Enter the virtualenv created by Poetry:
 poetry shell
 ```
 
-Identify the serial port your Watchy is connected to:
+Identify the serial port your device is connected to:
 
 ```bash
 python -m serial.tools.list_ports
@@ -47,7 +47,7 @@ sudo usermod -aG dialout $USER
 
 # re-enter your shell
 exec su -l $USER
-cd watchy_py
+cd eink-screen
 poetry shell
 ```
 
@@ -64,7 +64,7 @@ esptool.py --chip esp32 --port /dev/ttyACM0 write_flash -z 0x1000 ~/Downloads/es
 
 There are 2 main MicroPython scripts:
 
-- **boot.py**: this is run immediately after the Watchy boots up and by convention contains only code initialising debuggers, REPLs, etc.
+- **boot.py**: this is run immediately after the device boots up and by convention contains only code initialising debuggers, REPLs, etc.
 - **main.py**: this is run immediately after `boot.py` runs and should contain your application code. You can import other dependencies in this file.
 
 
@@ -74,38 +74,40 @@ You can use [mpremote](https://docs.micropython.org/en/latest/reference/mpremote
 
 Use <kbd>Ctrl</kbd><kbd>]</kbd> to exit the REPL.
 
-```bash
-mpremote mount src
-import main
-```
+When developing, my preference is to use a `src/test.py` file:
 
 ```bash
-mpremote run src/main.py
+mpremote mount src
+import test
 ```
+
+Use <kbd>Ctrl</kbd><kbd>D</kbd> to soft reload the device and remount the directory.
+
+You can use mpremote to transfer all the files later when deploying.
 
 ### RShell
 
-You can use [rshell](https://github.com/dhylands/rshell) to run Python scripts on the Watchy.
+Alternatively, you can use [rshell](https://github.com/dhylands/rshell). Note that using both mpremote and RShell at the same time may cause issues and lead to the device freezing up.
 
 ```bash
 poetry shell
 rshell
 ```
 
-And then within rshell's interactive prompt, connect to the Watchy:
+And then within rshell's interactive prompt, connect to the device:
 
 ```bash
 connect serial /dev/ttyACM0
 ```
 
-You can then access the Watchy's filesystem:
+You can then access the filesystem:
 
 ```bash
 ls /pyboard
 cp src/main.py /pyboard/
 ```
 
-Or even edit a file directly on the Watchy:
+Or even edit a file directly:
 
 ```bash
 edit /pyboard/main.py
@@ -124,15 +126,6 @@ Useful development commands:
 ```bash
 ./scripts/flash_micropython.sh # to re-flash micropython firmware if the MCU freezes up
 ./scripts/flash_src.sh # to transfer and run new files in a single command
-```
-
-### Restarting
-
-Since the reset pin on Watchy isn't easily accessible, you may want to do the following using rshell:
-
-```bash
-cp reset.py /pyboard/
-repl ~ import reset ~
 ```
 
 ### Assets
