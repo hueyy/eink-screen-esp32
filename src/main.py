@@ -1,32 +1,60 @@
-import gc
+import machine
 
 
-class Device:
-    def __init__(self):
-        self.mode = 0
+def top_toot_mode(tag: str):
+    from lib.display import Display
 
-    def top_toot_mode(self, tag: str):
-        from lib.wifi import connect_to_wifi
+    display = Display()
+    display.init_buffer()
 
-        if not connect_to_wifi():
-            print("Failed to connect to WiFi")
-            return
+    toot = None
+    try:
+        from lib.storage import retrieve_toot, erase_toot
 
-        from lib.data import get_latest_toot_by_tag
+        toot = retrieve_toot()
+        erase_toot()
+        display.display_toot(toot)
+        display.sleep()
+        return
+    except OSError:
+        print("No toot stored")
 
-        toot = get_latest_toot_by_tag(tag)
-        print("Got toot:", toot)
+    from lib.wifi import connect_to_wifi
 
-        if toot is not None:
-            from lib.display import Display
+    if not connect_to_wifi():
+        print("Failed to connect to WiFi")
+        return
 
-            display = Display()
-            display.init_buffer()
-            display.display_toot(toot)
-            display.sleep()
+    from lib.data import get_latest_toot_by_tag
 
-    def test_bluetooth(self):
-        from lib.bt import BT
+    toot = get_latest_toot_by_tag(tag)
 
-        b = BT()
-        b.wait_for_connection()
+    print("Got toot:", toot)
+
+    from lib.wifi import disconnect_from_wifi
+
+    disconnect_from_wifi()
+
+    if toot is not None:
+        from lib.storage import store_toot
+
+        store_toot(toot)
+        print("Stored toot")
+        machine.reset()
+
+
+def test_bluetooth():
+    from lib.bt import BT
+
+    b = BT()
+    b.wait_for_connection()
+
+
+def display_test():
+    from lib.display import Display
+    import assets.fonts.fira_sans_bold_32 as fira_sans_bold_32
+
+    display = Display()
+    display.init_buffer()
+    display.display_text("Hello World!", 50, 50, fira_sans_bold_32, 1, 0)
+    display.update()

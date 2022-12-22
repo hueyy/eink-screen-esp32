@@ -6,6 +6,7 @@ def connect_to_wifi() -> bool:
     if wlan.isconnected():
         return True
 
+    print("Enabling WiFi adapter...")
     wlan.active(True)
     wlan.config(
         reconnects=3
@@ -40,3 +41,16 @@ def connect_to_wifi() -> bool:
         pass
     print("Network configuration: ", wlan.ifconfig())
     return True
+
+
+def disconnect_from_wifi():
+    import network
+
+    wlan = network.WLAN(network.STA_IF)
+
+    if wlan.isconnected():
+        print("Disconnecting from WiFi...")
+        wlan.disconnect()
+
+    wlan.active(False)
+    print("Disabling WiFi adapter...")

@@ -1,11 +1,10 @@
-import framebuf
 from micropython import const
 
 MAX_WIDTH = const(800)
 MAX_HEIGHT = const(480)
 
-BACKGROUND = const(0)
-FOREGROUND = const(1)
+BACKGROUND = const(1)
+FOREGROUND = const(0)
 
 BAUD_RATE = const(20000000)
 BUFFER_SIZE = const(MAX_WIDTH * MAX_HEIGHT // 8)
@@ -27,12 +26,14 @@ class Display:
         self.epd.init()
 
     def init_buffer(self):
+        from framebuf import FrameBuffer, MONO_HLSB
+
         self.buffer = bytearray(BUFFER_SIZE)
-        self.framebuf = framebuf.FrameBuffer(
+        self.framebuf = FrameBuffer(
             self.buffer,
             MAX_WIDTH,
             MAX_HEIGHT,
-            framebuf.MONO_HLSB,
+            MONO_HLSB,
         )
 
     def update(self, buffer: bytearray | None = None):
@@ -72,13 +73,22 @@ class Display:
         wri.printstring(text)
 
     def display_toot(self, toot):
+        self.framebuf.fill(BACKGROUND)
+        name, username, content, timestamp = toot
+
         import assets.fonts.fira_sans_bold_32 as fira_sans_bold_32
+
+        self.display_text(name, 40, 40, fira_sans_bold_32, BACKGROUND, FOREGROUND)
+
         import assets.fonts.fira_sans_regular_24 as fira_sans_regular_24
 
-        self.framebuf.fill(1)
-        name, username, content, timestamp = toot
-        self.display_text(name, 40, 40, fira_sans_bold_32, 1, 0)
-        self.display_text(username, 40, 80, fira_sans_regular_24, 1, 0)
-        self.display_text(content, 40, 135, fira_sans_regular_24, 1, 0)
-        self.display_text(timestamp, 40, 170, fira_sans_regular_24, 1, 0)
+        self.display_text(
+            username, 40, 80, fira_sans_regular_24, BACKGROUND, FOREGROUND
+        )
+        self.display_text(
+            content, 40, 135, fira_sans_regular_24, BACKGROUND, FOREGROUND
+        )
+        self.display_text(
+            timestamp, 40, 170, fira_sans_regular_24, BACKGROUND, FOREGROUND
+        )
         self.update()
