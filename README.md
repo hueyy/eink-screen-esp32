@@ -7,7 +7,9 @@
 3. Understand the [file structure](#file-structure)
 4. Run code with [RShell](#rshell)
 
-Chip is ESP32-D0WDQ6 (revision v1.0)
+Chip is ESP32-D0WDQ6 (revision v1.0).
+
+Screen is Waveshare [7.5inch_e-Paper_HAT_(B)](https://www.waveshare.com/wiki/7.5inch_e-Paper_HAT_(B)).
 
 ### Install Poetry dependencies
 

@@ -13,7 +13,7 @@ BUFFER_SIZE = const(MAX_WIDTH * MAX_HEIGHT // 8)
 class Display:
     def __init__(self):
         from machine import Pin, SPI
-        from lib.epaper7in5_V2 import EPD
+        from lib.epaper7in5b_V2 import EPD
 
         sck = Pin(13)
         dc = Pin(27)
@@ -28,24 +28,48 @@ class Display:
     def init_buffer(self):
         from framebuf import FrameBuffer, MONO_HLSB
 
-        self.buffer = bytearray(BUFFER_SIZE)
-        self.framebuf = FrameBuffer(
-            self.buffer,
+        self.black_buffer = bytearray(BUFFER_SIZE)
+        self.black_framebuf = FrameBuffer(
+            self.black_buffer,
             MAX_WIDTH,
             MAX_HEIGHT,
             MONO_HLSB,
         )
 
-    def update(self, buffer: bytearray | None = None):
-        target_buffer = self.buffer if buffer is None else buffer
-        self.epd.display_frame(target_buffer)
+        self.red_buffer = bytearray(BUFFER_SIZE)
+        self.red_framebuf = FrameBuffer(
+            self.red_buffer,
+            MAX_WIDTH,
+            MAX_HEIGHT,
+            MONO_HLSB,
+        )
+
+    def update(
+        self, black_buffer: bytearray | None = None, red_buffer: bytearray | None = None
+    ):
+        target_black_buffer = (
+            self.black_buffer if black_buffer is None else black_buffer
+        )
+        target_red_buffer = self.red_buffer if red_buffer is None else red_buffer
+        self.epd.display_frame(target_black_buffer, target_red_buffer)
 
     def fill(self, color: int):
-        self.framebuf.fill(color)
+        self.black_framebuf.fill(color)
+        self.red_framebuf.fill(color)
+        self.update()
+
+    def fill_black(self, color: int):
+        self.black_framebuf.fill(color)
+        self.update()
+
+    def fill_red(self, color: int):
+        self.red_framebuf.fill(color)
         self.update()
 
     def clear(self):
         self.epd.clear()
+        # self.init_buffer()
+        # self.fill(1)
 
     def sleep(self):
         self.epd.sleep()
@@ -62,18 +86,18 @@ class Display:
         from lib.writer import Writer
 
         wri = Writer(
-            self.framebuf,
+            self.black_framebuf,
             font,
             MAX_WIDTH,
             MAX_HEIGHT,
             background_colour,
             text_colour,
         )
-        wri.set_textpos(self.framebuf, y, x)
+        wri.set_textpos(self.black_framebuf, y, x)
         wri.printstring(text)
 
     def display_toot(self, toot):
-        self.framebuf.fill(BACKGROUND)
+        self.black_framebuf.fill(BACKGROUND)
         name, username, content, timestamp = toot
 
         import assets.fonts.fira_sans_bold_32 as fira_sans_bold_32
