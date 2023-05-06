@@ -54,3 +54,23 @@ def disconnect_from_wifi():
 
     wlan.active(False)
     print("Disabling WiFi adapter...")
+
+
+def activate_ap():
+    import network
+
+    ap = network.WLAN(network.AP_IF)
+
+    from lib.secrets import AP_CREDENTIALS
+
+    ap.config(
+        ssid=AP_CREDENTIALS[0], key=AP_CREDENTIALS[1], security=network.AUTH_WPA2_PSK
+    )
+    ap.config(max_clients=3)
+    ap.active(True)
+    return ap
+
+
+def deactivate_ap(ap):
+    ap.active(false)
+    return

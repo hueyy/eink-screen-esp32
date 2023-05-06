@@ -146,9 +146,9 @@ class EPD:
         sleep_ms(200)
 
     # draw the current frame memory
-    def display_frame(self, black_frame_buffer, red_frame_buffer):
+    def display_frame(self, frame_buffer):
         # send black data
-        self._command(DATA_START_TRANSMISSION_1, black_frame_buffer)
+        self._command(DATA_START_TRANSMISSION_1, frame_buffer)
         # for j in range(0, self.height):
         #     for i in range(0, self.width // 8):
         #         self._data(frame_buffer)
@@ -156,34 +156,7 @@ class EPD:
         self._data(0x92)
 
         # send red data
-        self._command(DATA_START_TRANSMISSION_2, red_frame_buffer)
-        # for j in range(0, self.height):
-        #     for i in range(0, self.width // 8):
-        #         self._data(framebuffer)
-
-        # self._command(DATA_START_TRANSMISSION_1)
-        # for i in range(0, self.width * self.height // 4):
-        #     temp1 = frame_buffer[i]
-        #     j = 0
-        #     while j < 4:
-        #         if (temp1 & 0xC0) == 0xC0:
-        #             temp2 = 0x03
-        #         elif (temp1 & 0xC0) == 0x00:
-        #             temp2 = 0x00
-        #         else:
-        #             temp2 = 0x04
-        #         temp2 = (temp2 << 4) & 0xFF
-        #         temp1 = (temp1 << 2) & 0xFF
-        #         j += 1
-        #         if (temp1 & 0xC0) == 0xC0:
-        #             temp2 |= 0x03
-        #         elif (temp1 & 0xC0) == 0x00:
-        #             temp2 |= 0x00
-        #         else:
-        #             temp2 |= 0x04
-        #         temp1 = (temp1 << 2) & 0xFF
-        #         self._data(temp2)
-        #         j += 1
+        # self._command(DATA_START_TRANSMISSION_2, red_frame_buffer)
         self._turn_on_display()
 
     def clear(self):

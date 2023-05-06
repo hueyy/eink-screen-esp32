@@ -17,7 +17,6 @@ This project uses the Poetry dependency manager. Install that and run the follow
 
 ```bash
 poetry install
-poetry run mpremote mip install aioble 
 ```
 
 ### Install MicroPython firmware
@@ -59,7 +58,7 @@ Proceed to install the new firmware:
 
 ```bash
 esptool.py --port /dev/ttyACM0 erase_flash
-esptool.py --chip esp32 --port /dev/ttyACM0 write_flash -z 0x1000 ~/Downloads/esp32-20220618-v1.19.1.bin
+esptool.py --chip esp32 --port /dev/ttyACM0 write_flash -z 0x1000 ~/Downloads/esp32-20230426-v1.20.0.bin
 ```
 
 ### File structure
@@ -130,8 +129,23 @@ Useful development commands:
 ./scripts/flash_src.sh # to transfer and run new files in a single command
 ```
 
+### MicroPython dependencies
+
+These have to be installed after the MicroPython framework has been flashed:
+
+```
+poetry run mpremote mip install aioble github:miguelgrinberg/microdot/src/microdot.py
+```
+
+The `./scripts/flash_src.sh` script automatically installs the MicroPython dependencies.
+
 ### Assets
 
 - **Fonts**: [peterhinch/micropython-font-to-py](https://github.com/peterhinch/micropython-font-to-py)
   - `./scripts/font-to-py.py -x input.ttf <font_size> out.py`
 - **Images**: [image2cpp](https://javl.github.io/image2cpp/)
+
+
+### Web server
+
+The board will create an access point and serve up a control panel web app (see [`/frontend](/hueyy/eink-screen/tree/main/frontend)).

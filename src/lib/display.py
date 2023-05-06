@@ -24,6 +24,7 @@ class Display:
         self.spi = SPI(2, baudrate=BAUD_RATE, polarity=0, phase=0, sck=sck, mosi=mosi)
         self.epd = EPD(self.spi, cs, dc, rst, busy)
         self.epd.init()
+        self.init_buffer()
 
     def init_buffer(self):
         from framebuf import FrameBuffer, MONO_HLSB
@@ -36,13 +37,14 @@ class Display:
             MONO_HLSB,
         )
 
-        self.red_buffer = bytearray(BUFFER_SIZE)
-        self.red_framebuf = FrameBuffer(
-            self.red_buffer,
-            MAX_WIDTH,
-            MAX_HEIGHT,
-            MONO_HLSB,
-        )
+        # TODO: handle red in same buffer
+        # self.red_buffer = bytearray(BUFFER_SIZE)
+        # self.red_framebuf = FrameBuffer(
+        #     self.red_buffer,
+        #     MAX_WIDTH,
+        #     MAX_HEIGHT,
+        #     MONO_HLSB,
+        # )
 
     def update(
         self, black_buffer: bytearray | None = None, red_buffer: bytearray | None = None
@@ -50,21 +52,22 @@ class Display:
         target_black_buffer = (
             self.black_buffer if black_buffer is None else black_buffer
         )
-        target_red_buffer = self.red_buffer if red_buffer is None else red_buffer
-        self.epd.display_frame(target_black_buffer, target_red_buffer)
+        self.epd.display_frame(target_black_buffer, target_black_buffer)
+        # target_red_buffer = self.red_buffer if red_buffer is None else red_buffer
+        # self.epd.display_frame(target_black_buffer, target_red_buffer)
 
     def fill(self, color: int):
         self.black_framebuf.fill(color)
-        self.red_framebuf.fill(color)
+        # self.red_framebuf.fill(color)
         self.update()
 
     def fill_black(self, color: int):
         self.black_framebuf.fill(color)
         self.update()
 
-    def fill_red(self, color: int):
-        self.red_framebuf.fill(color)
-        self.update()
+    # def fill_red(self, color: int):
+    #     self.red_framebuf.fill(color)
+    #     self.update()
 
     def clear(self):
         self.epd.clear()
