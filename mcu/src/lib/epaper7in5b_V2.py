@@ -95,15 +95,15 @@ class EPD:
         self.width = EPD_WIDTH
         self.height = EPD_HEIGHT
 
-    def _command(self, command, data=None):
+    def send_command(self, command, data=None):
         self.dc(0)
         self.cs(0)
         self.spi.write(bytearray([command]))
         self.cs(1)
         if data is not None:
-            self._data(data)
+            self.send_data(data)
 
-    def _data(self, data):
+    def send_data(self, data):
         self.dc(1)
         self.cs(0)
         self.spi.write(
@@ -115,25 +115,25 @@ class EPD:
         )
         self.cs(1)
 
-    def _turn_on_display(self):
-        self._command(DISPLAY_REFRESH)
+    def turn_on_display(self):
+        self.send_command(DISPLAY_REFRESH)
         sleep_ms(100)
         self.wait_until_idle()
 
     def init(self):
         self.reset()
-        self._command(POWER_SETTING, [0x37, 0x00])
-        self._command(PANEL_SETTING, [0xCF, 0x08])
-        self._command(BOOSTER_SOFT_START, [0xC7, 0xCC, 0x28])
-        self._command(POWER_ON)
+        self.send_command(POWER_SETTING, [0x37, 0x00])
+        self.send_command(PANEL_SETTING, [0xCF, 0x08])
+        self.send_command(BOOSTER_SOFT_START, [0xC7, 0xCC, 0x28])
+        self.send_command(POWER_ON)
         self.wait_until_idle()
-        self._command(PLL_CONTROL, 0x3C)
-        self._command(TEMPERATURE_CALIBRATION, 0x00)
-        self._command(VCOM_AND_DATA_INTERVAL_SETTING, 0x77)
-        self._command(TCON_SETTING, 0x22)
-        self._command(TCON_RESOLUTION, ustruct.pack(">HH", EPD_WIDTH, EPD_HEIGHT))
-        self._command(VCM_DC_SETTING, 0x1E)  # decide by LUT file
-        self._command(FLASH_MODE, 0x03)
+        self.send_command(PLL_CONTROL, 0x3C)
+        self.send_command(TEMPERATURE_CALIBRATION, 0x00)
+        self.send_command(VCOM_AND_DATA_INTERVAL_SETTING, 0x77)
+        self.send_command(TCON_SETTING, 0x22)
+        self.send_command(TCON_RESOLUTION, ustruct.pack(">HH", EPD_WIDTH, EPD_HEIGHT))
+        self.send_command(VCM_DC_SETTING, 0x1E)  # decide by LUT file
+        self.send_command(FLASH_MODE, 0x03)
 
     def wait_until_idle(self):
         while self.busy.value() == BUSY:
@@ -148,30 +148,31 @@ class EPD:
     # draw the current frame memory
     def display_frame(self, frame_buffer):
         # send black data
-        self._command(DATA_START_TRANSMISSION_1, frame_buffer)
-        # for j in range(0, self.height):
-        #     for i in range(0, self.width // 8):
-        #         self._data(frame_buffer)
+        self.send_black_buffer(frame_buffer)
 
-        self._data(0x92)
+        self.send_data(0x92)
 
         # send red data
         # self._command(DATA_START_TRANSMISSION_2, red_frame_buffer)
-        self._turn_on_display()
+        self.turn_on_display()
+
+    def send_black_buffer(self, frame_buffer):
+        self.send_command(DATA_START_TRANSMISSION_1, frame_buffer)
 
     def clear(self):
-        self._command(DATA_START_TRANSMISSION_1)
+        self.send_command(DATA_START_TRANSMISSION_1)
         for i in range(self.width * self.height // 8):
-            self._data(0xFF)
+            self.send_data(0xFF)
 
-        self._command(DATA_START_TRANSMISSION_2)
-        for i in range(self.width * self.height // 8):
-            self._data(0xFF)
+        # red data
+        # self._command(DATA_START_TRANSMISSION_2)
+        # for i in range(self.width * self.height // 8):
+        #     self._data(0xFF)
 
-        self._turn_on_display()
+        self.turn_on_display()
 
     # to wake call reset() or init()
     def sleep(self):
-        self._command(POWER_OFF)
+        self.send_command(POWER_OFF)
         self.wait_until_idle()
-        self._command(DEEP_SLEEP, 0xA5)
+        self.send_command(DEEP_SLEEP, 0xA5)

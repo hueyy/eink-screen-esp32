@@ -66,6 +66,7 @@ def activate_ap():
     ap.config(
         ssid=AP_CREDENTIALS[0], key=AP_CREDENTIALS[1], security=network.AUTH_WPA2_PSK
     )
+    ap.ifconfig(("192.168.10.1", "255.255.255.0", "192.168.10.1", "192.168.10.1"))
     ap.config(max_clients=3)
     ap.active(True)
     return ap
