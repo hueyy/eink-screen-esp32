@@ -4,6 +4,8 @@ def connect_to_wifi() -> bool:
     wlan = network.WLAN(network.STA_IF)
 
     if wlan.isconnected():
+        print("Already connected")
+        print("IP address: ", wlan.ifconfig()[0])
         return True
 
     print("Enabling WiFi adapter...")
@@ -40,6 +42,7 @@ def connect_to_wifi() -> bool:
     while not wlan.isconnected():
         pass
     print("Network configuration: ", wlan.ifconfig())
+    print("IP address: ", wlan.ifconfig()[0])
     return True
 
 
@@ -74,4 +77,26 @@ def activate_ap():
 
 def deactivate_ap(ap):
     ap.active(false)
+    return
+
+
+def activate_wifi_captive_portal():
+    import uasyncio as asyncio
+    from lib.wifi import activate_ap
+
+    activate_ap()
+
+    loop = asyncio.get_event_loop()
+
+    from lib.wifi_server import start_wifi_server
+
+    loop.create_task(start_wifi_server())
+
+    # from lib.dns import run_dns_server
+
+    # loop.create_task(run_dns_server())
+
+    loop.run_forever()
+    loop.close()
+
     return

@@ -16,6 +16,7 @@ Screen is Waveshare [7.5inch_e-Paper_HAT_(B)](https://www.waveshare.com/wiki/7.5
 This project uses the Poetry dependency manager. Install that and run the following to install the poetry dependencies:
 
 ```bash
+cd mcu
 poetry install
 ```
 
@@ -145,3 +146,15 @@ The `./scripts/flash_src_full.sh` script automatically installs the MicroPython 
 - **Fonts**: [peterhinch/micropython-font-to-py](https://github.com/peterhinch/micropython-font-to-py)
   - `./scripts/font-to-py.py -x input.ttf <font_size> out.py`
 - **Images**: [image2cpp](https://javl.github.io/image2cpp/)
+
+## Secrets
+
+Example:
+
+```
+secrets.py
+
+WIFI_NETWORKS = [("SSID", "PASSWORD")]
+
+AP_CREDENTIALS = ("SSID", "PASSWORD")
+```

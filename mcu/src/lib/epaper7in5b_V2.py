@@ -153,7 +153,7 @@ class EPD:
         self.send_data(0x92)
 
         # send red data
-        # self._command(DATA_START_TRANSMISSION_2, red_frame_buffer)
+        # self.send_command(DATA_START_TRANSMISSION_2, red_frame_buffer)
         self.turn_on_display()
 
     def send_black_buffer(self, frame_buffer):
@@ -165,9 +165,9 @@ class EPD:
             self.send_data(0xFF)
 
         # red data
-        # self._command(DATA_START_TRANSMISSION_2)
-        # for i in range(self.width * self.height // 8):
-        #     self._data(0xFF)
+        self.send_command(DATA_START_TRANSMISSION_2)
+        for i in range(self.width * self.height // 8):
+            self.send_data(0xFF)
 
         self.turn_on_display()
 

@@ -32,9 +32,11 @@ class Display:
         self.width = width
         self.height = height
 
-    def init_buffer(self):
+    def init_epd(self):
         self.epd.init()
 
+    def init_buffer(self):
+        self.init_epd()
         from framebuf import FrameBuffer, MONO_HLSB
 
         self.black_buffer = bytearray(self.buffer_size)
