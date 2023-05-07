@@ -2,23 +2,29 @@
 # accessed via HTTPS: https://github.com/miguelgrinberg/microdot/issues/62
 
 
-async def start_api_server():
-    import gc
-
-    gc.collect()
-
-    from microdot_asyncio import Microdot, Request
+def start_api_server():
+    from microdot import Microdot, Request
 
     app = Microdot()
 
-    Request.max_content_length = 400 * 1024  # 400KB
-    Request.max_body_length = 400 * 1024
+    Request.max_content_length = 2000 * 1024  # 2MB
+    Request.max_body_length = 7 * 1024  # 7KB
+
+    CORS_HEADERS = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "*",
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Max-Age": "86400",
+    }
+
+    CHUNK_SIZE = 1024  # 1KB
 
     @app.route("/")
     def index(request):
         return {"status": "OK"}
 
-    @app.post("/clear")
+    @app.post("/clear/")
     def api_clear(request):
         from lib.display import Display
 
@@ -28,35 +34,26 @@ async def start_api_server():
 
         return {"status": "OK"}
 
-    @app.route("/receive_data", methods=["POST", "OPTIONS"])
+    @app.route("/receive_data/", methods=["POST", "OPTIONS"])
     def api_receive_data(request):
-        if "block_number" not in query_string:
-            return {"error": "block_number missing"}, 400
-        if "body" not in request:
+        if not request.stream:
             return {"error": "body missing"}, 400
 
-        block_number = int(query_string["block_number"])
-        buffer = request.body
-        print(buffer)
-        print(type(buffer))
+        content_length = int(request.headers["Content-Length"])
+        if not (content_length > 0):
+            return {"error": "body empty"}, 400
 
         from lib.display import Display
 
         d = Display()
 
-        parts = 100
-
-        if block_number == 0:
-            d.epd.init()  # manually init since we're not using init_buffer
-            d.epd.send_black_buffer(buffer)
-            return {"status": "OK", "last_block": 0}
-        elif block_number == (parts - 1):
-            d.epd.send_black_buffer(buffer)
-            d.turn_on_display()
-            return {"status": "OK", "last_block": (parts - 2)}
-        else:
-            d.epd.send_black_buffer(buffer)
-            return {"status": "OK", "last_block": block_number - 1}
+        d.epd.init()
+        while content_length > 0:
+            chunk = request.stream.read(min(content_length, CHUNK_SIZE))
+            d.epd.send_black_buffer(chunk)
+            content_length -= len(chunk)
+        d.epd.turn_on_display()
+        return {"status": "OK"}, CORS_HEADERS
 
     @app.errorhandler(404)
     def not_found(request):
@@ -66,12 +63,11 @@ async def start_api_server():
     def before_request(request):
         if request.method == "OPTIONS":
             res = Response(res)
-            res.headers["Access-Control-Allow-Origin"] = "*"
-            res.headers["Access-Control-Allow-Methods"] = "*"
-            res.headers["Access-Control-Allow-Headers"] = "*"
-            res.headers["Access-Control-Allow-Credentials"] = "true"
-            res.headers["Access-Control-Max-Age"] = "86400"
+            res.headers = res.headers | CORS_HEADERS
             return res
+
+        import gc
+
         gc.collect()
         print("Memory free: ", gc.mem_free())
 

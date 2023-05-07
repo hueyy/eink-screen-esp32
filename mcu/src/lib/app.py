@@ -10,12 +10,6 @@ def init():
 
     connect_to_wifi()
 
-    # start API server
-    import uasyncio as asyncio
-
-    loop = asyncio.get_event_loop()
     from lib.api_server import start_api_server
 
-    loop.create_task(start_api_server())
-    loop.run_forever()
-    loop.close()
+    start_api_server()
