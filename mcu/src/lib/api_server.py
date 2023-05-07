@@ -47,7 +47,7 @@ def start_api_server():
 
         d = Display()
 
-        d.epd.init()
+        d.init_epd()
         while content_length > 0:
             chunk = request.stream.read(min(content_length, CHUNK_SIZE))
             d.epd.send_black_buffer(chunk)

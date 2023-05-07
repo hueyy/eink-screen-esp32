@@ -161,13 +161,13 @@ class EPD:
 
     def clear(self):
         self.send_command(DATA_START_TRANSMISSION_1)
-        for i in range(self.width * self.height // 8):
-            self.send_data(0xFF)
+        for i in range(self.height // 8):
+            self.send_data([0xFF for i in range(self.width)])
 
         # red data
         self.send_command(DATA_START_TRANSMISSION_2)
-        for i in range(self.width * self.height // 8):
-            self.send_data(0xFF)
+        for i in range(self.height // 8):
+            self.send_data([0xFF for i in range(self.width)])
 
         self.turn_on_display()
 
