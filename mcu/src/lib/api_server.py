@@ -24,7 +24,7 @@ def start_api_server():
     def index(request):
         return {"status": "OK"}
 
-    @app.post("/clear/")
+    @app.route("/clear/", methods=["POST", "OPTIONS"])
     def api_clear(request):
         from lib.display import Display
 
@@ -53,8 +53,25 @@ def start_api_server():
             chunk = request.stream.read(min(content_length, CHUNK_SIZE))
             d.epd.send_data(chunk)
             content_length -= len(chunk)
-        # d.epd.send_data(0x92)
+        d.epd.send_data(0x92)
         d.epd.turn_on_display()
+        return {"status": "OK"}, CORS_HEADERS
+
+    @app.route("/wifi/", methods=["GET", "OPTIONS"])
+    def api_get_wifi_networks(request):
+        from lib.wifi import get_wifi_status, get_wifi_networks
+
+        status = get_wifi_status()
+        networks = get_wifi_networks()
+        return {
+            "status": status,
+            "networks": networks,
+        }, CORS_HEADERS
+
+    @app.route("/wifi/", methods=["POST"])
+    def api_wifi(request):
+        if not request.json or not request.json["ssid"] or not request.json["password"]:
+            return {"error": "WiFi credentials not provided"}, 400
         return {"status": "OK"}, CORS_HEADERS
 
     @app.errorhandler(404)

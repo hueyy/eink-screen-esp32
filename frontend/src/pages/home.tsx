@@ -1,9 +1,15 @@
 import type { FunctionComponent } from 'preact'
+import PrimaryButton from '../components/PrimaryButton'
+import { useCallback } from 'preact/hooks'
+import Api from '../utils/Api'
 
 const HomePage: FunctionComponent = () => {
+  const onClear = useCallback(() => {
+    void Api.clearImage()
+  }, [])
   return (
     <>
-      <h1>eInk Screen</h1>
+      <h1 className="text-2xl font-black">eInk Screen</h1>
       <ul>
         <li>
           <a href="/text">Text</a>
@@ -15,6 +21,7 @@ const HomePage: FunctionComponent = () => {
           <a href="/image">Images</a>
         </li>
       </ul>
+      <PrimaryButton onClick={onClear}>CLEAR</PrimaryButton>
     </>
   )
 }

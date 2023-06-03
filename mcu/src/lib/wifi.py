@@ -1,3 +1,22 @@
+def get_wifi_status():
+    import network
+
+    wlan = network.WLAN(network.STA_IF)
+    if wlan.isconnected():
+        return wlan.ifconfig()
+
+    return False
+
+
+def get_wifi_networks():
+    import network
+
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(True)
+    networks = wlan.scan()
+    return networks
+
+
 def connect_to_wifi() -> bool:
     import network
 
