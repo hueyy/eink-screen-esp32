@@ -1,4 +1,6 @@
-const HomePage = () => {
+import type { FunctionComponent } from 'preact'
+
+const HomePage: FunctionComponent = () => {
   return (
     <>
       <h1>eInk Screen</h1>
@@ -10,7 +12,7 @@ const HomePage = () => {
           <a href="/toots">Toots</a>
         </li>
         <li>
-          <a href="/images">Images</a>
+          <a href="/image">Images</a>
         </li>
       </ul>
     </>

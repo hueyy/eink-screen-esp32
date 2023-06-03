@@ -6,7 +6,7 @@ const determineBit = (
   blue: number,
   alpha: number
 ): boolean => {
-  if (alpha < 127){
+  if (alpha < 127) {
     return true
   } else if ((red + blue + green) / 3 > DITHER_THRESHOLD) {
     return true
@@ -16,11 +16,11 @@ const determineBit = (
 }
 
 // NOT TESTED
-const convertImageDataToMonoVLSB = (
+export const convertImageDataToMonoVLSB = (
   buffer: Uint8ClampedArray,
   width: number,
-  height: number,
-) => {
+  height: number
+): Uint8Array => {
   // Buffer should contain a 1-dimensional array of integers from 0-255
   // in the RGBA format, representing pixels proceeding from left to
   // right and then downwards
@@ -35,18 +35,18 @@ const convertImageDataToMonoVLSB = (
   const newByteBuffer = new Uint8Array(width * height / 8)
   const newBitBuffer = new Uint8Array(width * height)
 
-  for(let i = 0; i < buffer.length; i+=4){
+  for (let i = 0; i < buffer.length; i += 4) {
     const red = buffer[i]
-    const green = buffer[i+1]
-    const blue = buffer[i+2]
-    const alpha = buffer[i+3]
+    const green = buffer[i + 1]
+    const blue = buffer[i + 2]
+    const alpha = buffer[i + 3]
     const outputBit = determineBit(red, green, blue, alpha)
-    newBitBuffer[i/4] = outputBit ? 1 : 0
+    newBitBuffer[i / 4] = outputBit ? 1 : 0
   }
 
-  for (let i = 0; i < newByteBuffer.length; i++){
+  for (let i = 0; i < newByteBuffer.length; i++) {
     let bitString = ''
-    for(let j = 0; j < 8; j++){
+    for (let j = 0; j < 8; j++) {
       bitString = bitString.concat(`${newBitBuffer[i % width + (width * j) + width * 8 * Math.floor(i / width)]}`)
     }
     const byte = Number.parseInt(bitString, 2)
@@ -59,7 +59,7 @@ const convertImageDataToMonoVLSB = (
 export const convertImageDataToMonoHLSB = (
   inputBuffer: Uint8ClampedArray,
   width: number,
-  height: number,
+  height: number
 ): Uint8Array => {
   // Buffer should contain a 1-dimensional array of integers from 0-255
   // in the RGBA format, representing pixels proceeding from left to
@@ -75,14 +75,14 @@ export const convertImageDataToMonoHLSB = (
   let byteIndex = 7
 
   const newByteBuffer = new Uint8Array(width * height / 8)
-  for (let i = 0; i < inputBuffer.length; i+=4){
+  for (let i = 0; i < inputBuffer.length; i += 4) {
     const red = inputBuffer[i]
     const green = inputBuffer[i + 1]
     const blue = inputBuffer[i + 2]
     const alpha = inputBuffer[i + 3]
     currentByte += determineBit(red, green, blue, alpha)
-        ? 2 ** byteIndex
-        : 0
+      ? 2 ** byteIndex
+      : 0
 
     if (byteIndex === 0) {
       newByteBuffer[(i - 28) / 32] = currentByte // one iteration before 32

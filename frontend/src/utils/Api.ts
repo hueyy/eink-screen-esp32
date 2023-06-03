@@ -1,6 +1,6 @@
-const postImageData = async (imageData: Uint8Array) => {
+const postImageData = async (imageData: Uint8Array): Promise<Record<string, string>> => {
   try {
-    const response = await fetch(`http://192.168.10.92/receive_data/`, { method: 'POST', body: imageData })
+    const response = await fetch('http://192.168.10.92/receive_data/', { method: 'POST', body: imageData })
     return await response.json()
   } catch (error) {
     console.error(error)
@@ -9,7 +9,7 @@ const postImageData = async (imageData: Uint8Array) => {
 }
 
 const Api = {
-  postImageData,
+  postImageData
 }
 
 export default Api
