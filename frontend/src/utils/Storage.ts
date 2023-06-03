@@ -1,12 +1,14 @@
 import Options from './Options'
 
 interface Store {
+  imageSizing: typeof Options.imageSizing[keyof typeof Options.imageSizing]
   imageRotation: typeof Options.imageRotation[keyof typeof Options.imageRotation]
 }
 
 const STORE_KEY = 'store'
 
 const defaultStore: Store = {
+  imageSizing: Options.imageSizing.fullWidth,
   imageRotation: Options.imageRotation[0]
 }
 

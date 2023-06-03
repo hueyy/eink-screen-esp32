@@ -51,9 +51,15 @@ def start_api_server():
         d.epd.begin_black_data_transmission()
         while content_length > 0:
             chunk = request.stream.read(min(content_length, CHUNK_SIZE))
-            d.epd.send_data(chunk)
             content_length -= len(chunk)
-        d.epd.send_data(0x92)
+
+            # end of black data
+            # start of red data
+            # if content_length >= 1000:
+            #     d.epd.send_data(0x92)
+
+            d.epd.send_data(chunk)
+
         d.epd.turn_on_display()
         return {"status": "OK"}, CORS_HEADERS
 

@@ -1,6 +1,6 @@
 const imageSizing = {
-  crop: 'crop',
-  centre: 'centre'
+  fullWidth: 'fullWidth',
+  fullHeight: 'fullHeight'
 } as const
 
 const imageRotation = {
@@ -10,9 +10,16 @@ const imageRotation = {
   270: '270'
 } as const
 
+const dithering = {
+  binary: 'binary',
+  floydSteinberg: 'floydSteinberg',
+  floydSteinbergRed: 'floydSteinbergRed'
+} as const
+
 const Options = {
   imageSizing,
-  imageRotation
+  imageRotation,
+  dithering
 }
 
 export default Options

@@ -9,12 +9,18 @@ const useStore = () => {
     setStoreInState(retrieveStore)
   }, [])
 
+  const getStore = useCallback(() => {
+    const newStore = Storage.get()
+    setStoreInState(newStore)
+    return newStore
+  }, [])
+
   const setStore = useCallback((newStore: typeof Storage.defaultStore) => {
     setStoreInState(newStore)
     Storage.set(newStore)
   }, [])
 
-  return { store, setStore } as const
+  return { store, setStore, getStore } as const
 }
 
 export default useStore

@@ -4,6 +4,8 @@ import Api from '../utils/Api'
 import type { FunctionComponent } from 'preact'
 import PrimaryButton from '../components/PrimaryButton'
 import ImageOptions from '../components/ImageOptions'
+import type Storage from '../utils/Storage'
+import useStore from '../hooks/useStore'
 
 const WIDTH = 800
 const HEIGHT = 480
@@ -12,7 +14,10 @@ const ImagePage: FunctionComponent = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [currentImage, setImage] = useState<string>()
 
-  const onPreview = useCallback((imageRotation: string) => {
+  const { getStore } = useStore()
+
+  const onPreview = useCallback((inputStore?: typeof Storage.defaultStore) => {
+    const store = (typeof inputStore === 'undefined') ? getStore() : inputStore
     if (currentImage != null) {
       const image = new Image()
       image.src = currentImage
@@ -25,14 +30,25 @@ const ImagePage: FunctionComponent = () => {
           ctx.fillRect(0, 0, WIDTH, HEIGHT)
           ctx.save()
           ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2)
-          const rotation = Number.parseInt(imageRotation, 10)
+          const rotation = Number.parseInt(store.imageRotation, 10)
           ctx.rotate(rotation * Math.PI / 180)
-          ctx.drawImage(image, -image.width / 2, -image.height / 2)
+          const ratio = Math.min(ctx.canvas.width / image.width, ctx.canvas.height / image.height)
+          ctx.drawImage(
+            image,
+            0,
+            0,
+            image.width,
+            image.height,
+            Math.round((ctx.canvas.width - image.width * ratio) / 2) - ctx.canvas.width / 2,
+            Math.round((ctx.canvas.height - image.height * ratio) / 2) - ctx.canvas.height / 2,
+            image.width * ratio,
+            image.height * ratio
+          )
           ctx.restore()
         }
       }
     }
-  }, [currentImage])
+  }, [currentImage, getStore])
 
   const onChangeFile = useCallback((event: Event) => {
     if (((event.target as HTMLInputElement).files != null) &&
@@ -43,9 +59,7 @@ const ImagePage: FunctionComponent = () => {
     }
   }, [])
 
-  useEffect(() => {
-    onPreview('0')
-  }, [onPreview, currentImage])
+  useEffect(() => { onPreview() }, [onPreview, currentImage])
 
   const onSubmit = useCallback(() => {
     if (canvasRef.current != null) {

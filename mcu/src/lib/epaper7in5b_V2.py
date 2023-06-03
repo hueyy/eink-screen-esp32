@@ -146,14 +146,15 @@ class EPD:
         sleep_ms(200)
 
     # draw the current frame memory
-    def display_frame(self, frame_buffer):
+    def display_frame(self, frame_buffer_black, frame_buffer_red):
         # send black data
         self.send_black_buffer(frame_buffer)
 
         self.send_data(0x92)
 
         # send red data
-        # self.send_command(DATA_START_TRANSMISSION_2, red_frame_buffer)
+        if frame_buffer_red is not None:
+            self.send_red_buffer(frame_buffer)
         self.turn_on_display()
 
     def begin_black_data_transmission(self):
@@ -163,13 +164,20 @@ class EPD:
         self.begin_black_data_transmission()
         self.send_data(frame_buffer)
 
+    def begin_red_data_transmission(self):
+        self.send_command(DATA_START_TRANSMISSION_2)
+
+    def send_red_buffer(self, frame_buffer):
+        self.begin_red_data_transmission()()
+        self.send_data(frame_buffer)
+
     def clear(self):
         self.begin_black_data_transmission()
         for i in range(self.height // 8):
             self.send_data([0xFF for i in range(self.width)])
 
         # red data
-        self.send_command(DATA_START_TRANSMISSION_2)
+        self.begin_red_data_transmission()
         for i in range(self.height // 8):
             self.send_data([0xFF for i in range(self.width)])
 
