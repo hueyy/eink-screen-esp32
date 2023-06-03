@@ -156,11 +156,15 @@ class EPD:
         # self.send_command(DATA_START_TRANSMISSION_2, red_frame_buffer)
         self.turn_on_display()
 
+    def begin_black_data_transmission(self):
+        self.send_command(DATA_START_TRANSMISSION_1)
+
     def send_black_buffer(self, frame_buffer):
-        self.send_command(DATA_START_TRANSMISSION_1, frame_buffer)
+        self.begin_black_data_transmission()
+        self.send_data(frame_buffer)
 
     def clear(self):
-        self.send_command(DATA_START_TRANSMISSION_1)
+        self.begin_black_data_transmission()
         for i in range(self.height // 8):
             self.send_data([0xFF for i in range(self.width)])
 
