@@ -2,6 +2,9 @@ import { useCallback, useRef, useState } from 'preact/hooks'
 import { convertImageDataToMonoHLSB } from '../utils/Utils'
 import Api from '../utils/Api'
 import type { FunctionComponent } from 'preact'
+import Container from '../components/Container'
+import Header from '../components/Header'
+import PrimaryButton from '../components/PrimaryButton'
 
 const WIDTH = 800
 const HEIGHT = 480
@@ -38,13 +41,21 @@ const TextPage: FunctionComponent = () => {
   }, [onPreview])
 
   return (
-    <>
-      <h1>Text</h1>
-      <input type="text" placeholder="Enter string..." value={text} onChange={onChangeText}></input>
-      <button type="button" onClick={onSubmit}>SUBMIT</button>
+    <Container>
+      <Header backButton>Text</Header>
+      <div className="flex flex-col items-start py-6 px-2">
+        <input
+          className="my-4 px-4 py-2 border border-neutral-500"
+          type="text"
+          placeholder="Enter string..."
+          value={text}
+          onChange={onChangeText}
+        ></input>
+        <PrimaryButton onClick={onSubmit}>SUBMIT</PrimaryButton>
+      </div>
 
       <canvas id="preview" width={WIDTH} height={HEIGHT} ref={canvasRef} style="border: 1px solid black;"></canvas>
-    </>
+    </Container>
   )
 }
 

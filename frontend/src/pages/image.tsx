@@ -6,6 +6,8 @@ import PrimaryButton from '../components/PrimaryButton'
 import ImageOptions from '../components/ImageOptions'
 import type Storage from '../utils/Storage'
 import useStore from '../hooks/useStore'
+import Container from '../components/Container'
+import Header from '../components/Header'
 
 const WIDTH = 800
 const HEIGHT = 480
@@ -71,10 +73,10 @@ const ImagePage: FunctionComponent = () => {
   }, [])
 
   return (
-    <>
-      <div className="py-4 px-2">
-        <h1 className="text-3xl">Image</h1>
-      </div>
+    <Container>
+      <Header backButton>
+        Image
+      </Header>
 
       <div className="py-6 px-2 flex flex-col items-start">
         <input
@@ -95,7 +97,7 @@ const ImagePage: FunctionComponent = () => {
         width={WIDTH} height={HEIGHT}
         ref={canvasRef}>
       </canvas>
-    </>
+    </Container>
   )
 }
 

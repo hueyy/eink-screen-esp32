@@ -1,15 +1,12 @@
 import Options from './Options'
 
-interface Store {
-  imageSizing: typeof Options.imageSizing[keyof typeof Options.imageSizing]
-  imageRotation: typeof Options.imageRotation[keyof typeof Options.imageRotation]
-}
-
 const STORE_KEY = 'store'
 
 const defaultStore: Store = {
   imageSizing: Options.imageSizing.fullWidth,
-  imageRotation: Options.imageRotation[0]
+  imageRotation: Options.imageRotation[0],
+  wifi: [],
+  host: 'http://192.168.10.92'
 }
 
 const set = (newStore: Store): void => {
