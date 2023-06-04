@@ -10,7 +10,7 @@ const Header: FunctionComponent<Props> = ({
   backButton = false
 }) => {
   return (
-    <div className="flex flex-row mt-6 select-none">
+    <div className="flex flex-row mt-6 select-none px-2">
       {backButton
         ? (
         <a className="text-2xl flex-initial cursor-pointer" href="/">

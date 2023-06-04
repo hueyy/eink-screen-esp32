@@ -54,7 +54,13 @@ const TextPage: FunctionComponent = () => {
         <PrimaryButton onClick={onSubmit}>SUBMIT</PrimaryButton>
       </div>
 
-      <canvas id="preview" width={WIDTH} height={HEIGHT} ref={canvasRef} style="border: 1px solid black;"></canvas>
+      <canvas
+        className="border border-black w-full max-w-full mx-auto"
+        id="preview"
+        width={WIDTH}
+        height={HEIGHT}
+        ref={canvasRef}
+      ></canvas>
     </Container>
   )
 }

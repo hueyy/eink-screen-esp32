@@ -54,13 +54,13 @@ def start_api_server():
 
         while content_length > 0:
             chunk = request.stream.read(min(content_length, CHUNK_SIZE))
-            content_length -= len(chunk)
 
             # end of black data and start of red data
             if content_length == half_content_length:
                 d.epd.send_data(0x92)
                 d.epd.begin_red_data_transmission()
 
+            content_length -= len(chunk)
             d.epd.send_data(chunk)
 
         d.epd.turn_on_display()

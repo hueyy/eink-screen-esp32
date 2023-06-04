@@ -2,7 +2,7 @@ import type { ComponentChildren, FunctionComponent } from 'preact'
 
 interface Props {
   className?: string
-  onClick?: () => void
+  onClick?: (() => void) | (() => Promise<void>)
   children: ComponentChildren
 }
 

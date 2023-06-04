@@ -2,3 +2,5 @@
 !*.secret
 /.vscode
 /.mypy_cache
+# Local Netlify folder
+.netlify

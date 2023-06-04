@@ -97,7 +97,7 @@ const ImagePage: FunctionComponent = () => {
 
       <canvas
         id="preview"
-        className="border border-black mx-2"
+        className="border border-black w-full max-w-full mx-auto"
         width={WIDTH} height={HEIGHT}
         ref={canvasRef}>
       </canvas>
