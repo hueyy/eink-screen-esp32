@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks'
-import { convertImageDataToMonoHLSB } from '../utils/Utils'
+import { convertImageDataToMonoHLSB, ditherImageData } from '../utils/Utils'
 import Api from '../utils/Api'
 import type { FunctionComponent } from 'preact'
 import PrimaryButton from '../components/PrimaryButton'
@@ -47,6 +47,10 @@ const ImagePage: FunctionComponent = () => {
             image.height * ratio
           )
           ctx.restore()
+
+          const rawImageData = ctx.getImageData(0, 0, WIDTH, HEIGHT)
+          const ditheredImageData = ditherImageData(rawImageData, store.dithering)
+          ctx.putImageData(ditheredImageData, 0, 0)
         }
       }
     }
@@ -66,8 +70,8 @@ const ImagePage: FunctionComponent = () => {
   const onSubmit = useCallback(() => {
     if (canvasRef.current != null) {
       const ctx = canvasRef.current.getContext('2d') as CanvasRenderingContext2D
-      const rawImageData = ctx.getImageData(0, 0, WIDTH, HEIGHT).data
-      const imageData = convertImageDataToMonoHLSB(rawImageData, WIDTH, HEIGHT)
+      const rawImageData = ctx.getImageData(0, 0, WIDTH, HEIGHT)
+      const imageData = convertImageDataToMonoHLSB(rawImageData.data, WIDTH, HEIGHT)
       void Api.postImageData(imageData)
     }
   }, [])

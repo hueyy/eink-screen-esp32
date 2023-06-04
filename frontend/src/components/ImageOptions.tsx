@@ -22,6 +22,12 @@ const imageRotationOptions = [
   { content: '270 degrees', value: Options.imageRotation[270] }
 ]
 
+const ditheringOptions = [
+  { content: 'Binary (i.e. colour reduction only)', value: Options.dithering.binary },
+  { content: 'Floyd-Steinberg', value: Options.dithering.floydSteinberg },
+  { content: 'Floyd-Steinberg (with red)', value: Options.dithering.floydSteinbergRed }
+]
+
 const ImageOptions: FunctionComponent<Props> = ({
   className = '',
   onPreview
@@ -40,7 +46,16 @@ const ImageOptions: FunctionComponent<Props> = ({
   const onChangeImageRotation = useCallback((value: string) => {
     const newStore: typeof store = {
       ...store,
-      imageRotation: value as (typeof store)['imageRotation']
+      imageRotation: value as Store['imageRotation']
+    }
+    setStore(newStore)
+    onPreview(newStore)
+  }, [store, setStore, onPreview])
+
+  const onChangeDithering = useCallback((value: string) => {
+    const newStore = {
+      ...store,
+      dithering: value as Store['dithering']
     }
     setStore(newStore)
     onPreview(newStore)
@@ -59,6 +74,12 @@ const ImageOptions: FunctionComponent<Props> = ({
         options={imageRotationOptions}
         onChange={onChangeImageRotation}
         value={store.imageRotation}
+      />
+      <SelectInput
+        label="Dithering"
+        options={ditheringOptions}
+        onChange={onChangeDithering}
+        value={store.dithering}
       />
     </div>
   )

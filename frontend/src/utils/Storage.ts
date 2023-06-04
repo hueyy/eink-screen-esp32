@@ -5,6 +5,7 @@ const STORE_KEY = 'store'
 const defaultStore: Store = {
   imageSizing: Options.imageSizing.fullWidth,
   imageRotation: Options.imageRotation[0],
+  dithering: Options.dithering.binary,
   wifi: [],
   host: 'http://192.168.10.92'
 }
