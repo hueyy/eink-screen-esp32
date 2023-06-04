@@ -18,7 +18,7 @@ def start_api_server():
         "Access-Control-Max-Age": "86400",
     }
 
-    CHUNK_SIZE = 1024  # 1KB
+    CHUNK_SIZE = 1000  # 1KiB
 
     @app.route("/")
     def index(request):
@@ -43,20 +43,23 @@ def start_api_server():
         if not (content_length > 0):
             return {"error": "body empty"}, 400
 
+        half_content_length = content_length // 2
+
         from lib.display import Display
 
         d = Display()
 
         d.init_epd()
         d.epd.begin_black_data_transmission()
+
         while content_length > 0:
             chunk = request.stream.read(min(content_length, CHUNK_SIZE))
             content_length -= len(chunk)
 
-            # end of black data
-            # start of red data
-            # if content_length >= 1000:
-            #     d.epd.send_data(0x92)
+            # end of black data and start of red data
+            if content_length == half_content_length:
+                d.epd.send_data(0x92)
+                d.epd.begin_red_data_transmission()
 
             d.epd.send_data(chunk)
 

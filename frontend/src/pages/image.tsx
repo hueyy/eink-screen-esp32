@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks'
-import { convertImageDataToMonoHLSB, ditherImageData } from '../utils/Utils'
+import { convertImageDataToMonoRedHLSB, ditherImageData } from '../utils/Utils'
 import Api from '../utils/Api'
 import type { FunctionComponent } from 'preact'
 import PrimaryButton from '../components/PrimaryButton'
@@ -71,7 +71,7 @@ const ImagePage: FunctionComponent = () => {
     if (canvasRef.current != null) {
       const ctx = canvasRef.current.getContext('2d') as CanvasRenderingContext2D
       const rawImageData = ctx.getImageData(0, 0, WIDTH, HEIGHT)
-      const imageData = convertImageDataToMonoHLSB(rawImageData.data, WIDTH, HEIGHT)
+      const imageData = convertImageDataToMonoRedHLSB(rawImageData.data, WIDTH, HEIGHT)
       void Api.postImageData(imageData)
     }
   }, [])

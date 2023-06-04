@@ -24,6 +24,7 @@ const imageRotationOptions = [
 
 const ditheringOptions = [
   { content: 'Binary (i.e. colour reduction only)', value: Options.dithering.binary },
+  { content: 'Ternary (including red)', value: Options.dithering.ternary },
   { content: 'Floyd-Steinberg', value: Options.dithering.floydSteinberg },
   { content: 'Floyd-Steinberg (with red)', value: Options.dithering.floydSteinbergRed }
 ]

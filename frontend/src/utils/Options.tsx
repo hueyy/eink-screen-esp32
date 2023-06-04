@@ -12,6 +12,7 @@ const imageRotation = {
 
 const dithering = {
   binary: 'binary',
+  ternary: 'ternary',
   floydSteinberg: 'floydSteinberg',
   floydSteinbergRed: 'floydSteinbergRed'
 } as const

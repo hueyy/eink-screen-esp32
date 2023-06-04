@@ -6,7 +6,7 @@ interface WifiCredential {
 interface Store {
   imageSizing: 'fullWidth' | 'fullHeight'
   imageRotation: '0' | '90' | '180' | '270'
-  dithering: 'binary' | 'floydSteinberg' | 'floydStenbergRed'
+  dithering: 'binary' | 'ternary' | 'floydSteinberg' | 'floydStenbergRed'
   wifi: WifiCredential[]
   host: string
 }
