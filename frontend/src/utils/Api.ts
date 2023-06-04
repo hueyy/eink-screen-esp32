@@ -1,6 +1,4 @@
-const host = 'http://192.168.10.92'
-
-const postImageData = async (imageData: Uint8Array): Promise<Record<string, string>> => {
+const postImageData = async (host: string, imageData: Uint8Array): Promise<Record<string, string>> => {
   try {
     const response = await fetch(`${host}/receive_data/`, { method: 'POST', body: imageData })
     return await response.json()
@@ -10,7 +8,7 @@ const postImageData = async (imageData: Uint8Array): Promise<Record<string, stri
   }
 }
 
-const clearImage = async (): Promise<Record<string, string>> => {
+const clearImage = async (host: string): Promise<Record<string, string>> => {
   try {
     const response = await fetch(`${host}/clear/`, { method: 'POST' })
     return await response.json()

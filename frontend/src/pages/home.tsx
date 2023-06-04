@@ -23,12 +23,12 @@ const HomePage: FunctionComponent = () => {
   const { store, setStore } = useStore()
   const onClear = useCallback(async () => {
     try {
-      const response = await Api.clearImage()
+      const response = await Api.clearImage(store.host)
       window.alert(JSON.stringify(response))
     } catch (error) {
       console.error(error)
     }
-  }, [])
+  }, [store])
 
   const onClickHost = useCallback(() => {
     const newHost = window.prompt('New host?', store.host)

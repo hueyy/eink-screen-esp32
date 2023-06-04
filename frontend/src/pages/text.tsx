@@ -5,6 +5,7 @@ import type { FunctionComponent } from 'preact'
 import Container from '../components/Container'
 import Header from '../components/Header'
 import PrimaryButton from '../components/PrimaryButton'
+import useStore from '../hooks/useStore'
 
 const WIDTH = 800
 const HEIGHT = 480
@@ -12,6 +13,7 @@ const HEIGHT = 480
 const TextPage: FunctionComponent = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [text, setText] = useState('')
+  const { store } = useStore()
 
   const onChangeText = useCallback((event: Event) => {
     setText((event.target as HTMLInputElement).value)
@@ -36,9 +38,9 @@ const TextPage: FunctionComponent = () => {
     if (ctx != null) {
       const rawImageData = ctx.getImageData(0, 0, WIDTH, HEIGHT).data
       const imageData = convertImageDataToMonoHLSB(rawImageData, WIDTH, HEIGHT)
-      void Api.postImageData(imageData)
+      void Api.postImageData(store.host, imageData)
     }
-  }, [onPreview])
+  }, [onPreview, store])
 
   return (
     <Container>

@@ -16,10 +16,10 @@ const ImagePage: FunctionComponent = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [currentImage, setImage] = useState<string>()
 
-  const { getStore } = useStore()
+  const { store, getStore } = useStore()
 
   const onPreview = useCallback((inputStore?: typeof Storage.defaultStore) => {
-    const store = (typeof inputStore === 'undefined') ? getStore() : inputStore
+    const currentStore = (typeof inputStore === 'undefined') ? getStore() : inputStore
     if (currentImage != null) {
       const image = new Image()
       image.src = currentImage
@@ -32,7 +32,7 @@ const ImagePage: FunctionComponent = () => {
           ctx.fillRect(0, 0, WIDTH, HEIGHT)
           ctx.save()
           ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2)
-          const rotation = Number.parseInt(store.imageRotation, 10)
+          const rotation = Number.parseInt(currentStore.imageRotation, 10)
           ctx.rotate(rotation * Math.PI / 180)
           const ratio = Math.min(ctx.canvas.width / image.width, ctx.canvas.height / image.height)
           ctx.drawImage(
@@ -49,7 +49,7 @@ const ImagePage: FunctionComponent = () => {
           ctx.restore()
 
           const rawImageData = ctx.getImageData(0, 0, WIDTH, HEIGHT)
-          const ditheredImageData = ditherImageData(rawImageData, store.dithering)
+          const ditheredImageData = ditherImageData(rawImageData, currentStore.dithering)
           ctx.putImageData(ditheredImageData, 0, 0)
         }
       }
@@ -72,9 +72,9 @@ const ImagePage: FunctionComponent = () => {
       const ctx = canvasRef.current.getContext('2d') as CanvasRenderingContext2D
       const rawImageData = ctx.getImageData(0, 0, WIDTH, HEIGHT)
       const imageData = convertImageDataToMonoRedHLSB(rawImageData.data, WIDTH, HEIGHT)
-      void Api.postImageData(imageData)
+      void Api.postImageData(store.host, imageData)
     }
-  }, [])
+  }, [store])
 
   return (
     <Container>
