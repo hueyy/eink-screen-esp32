@@ -17,6 +17,10 @@ const determineBit = (
   }
 }
 
+const isRed = (red: number, green: number, blue: number): boolean => {
+  return red > 230 && green < 30 && blue < 30
+}
+
 // NOT TESTED
 // export const convertImageDataToMonoVLSB = (
 //   buffer: Uint8ClampedArray,
@@ -126,9 +130,7 @@ export const convertImageDataToMonoRedHLSB = (
     const blue = inputBuffer[i + 2]
     const alpha = inputBuffer[i + 3]
 
-    const isRed = red > 230 && green < 30 && blue < 30
-
-    if (isRed) {
+    if (isRed(red, green, blue)) {
       currentRedByte += 0
       currentBlackByte += 2 ** byteIndex
     } else {
@@ -158,6 +160,7 @@ export const convertImageDataToMonoRedHLSB = (
 export const ditherImageData = (imageData: ImageData, ditherMode: Store['dithering']): ImageData => {
   const { data, width } = imageData
   switch (ditherMode) {
+    // TODO: Bill Atkinson dithering and Riemersma dithering?
     case 'binary': {
       for (let currentPixel = 0; currentPixel <= data.length; currentPixel += 4) {
         const averageLuminosity = (data[currentPixel] + data[currentPixel + 1] + data[currentPixel + 2]) / 3
@@ -169,7 +172,7 @@ export const ditherImageData = (imageData: ImageData, ditherMode: Store['ditheri
     }
     case 'ternary': {
       for (let currentPixel = 0; currentPixel <= data.length; currentPixel += 4) {
-        if (data[currentPixel] > 250 && data[currentPixel + 1] < 10 && data[currentPixel + 2] < 10) {
+        if (isRed(data[currentPixel], data[currentPixel + 1], data[currentPixel + 2])) {
           data[currentPixel] = 255
           data[currentPixel + 1] = data[currentPixel + 2] = 0
         } else {
@@ -185,20 +188,43 @@ export const ditherImageData = (imageData: ImageData, ditherMode: Store['ditheri
       for (let currentPixel = 0; currentPixel <= data.length; currentPixel += 4) {
         const averageLuminosity = (data[currentPixel] + data[currentPixel + 1] + data[currentPixel + 2]) / 3
         if (averageLuminosity < 240 && averageLuminosity > 20) {
-          const newPixel = imageData.data[currentPixel] < DITHER_THRESHOLD ? 0 : 255
-          const err = Math.floor((imageData.data[currentPixel] - newPixel) / 16)
+          const newPixel = data[currentPixel] < DITHER_THRESHOLD ? 0 : 255
+          const err = Math.floor((data[currentPixel] - newPixel) / 16)
           imageData.data[currentPixel] = newPixel
           imageData.data[currentPixel + 4] += err * 7
           imageData.data[currentPixel + 4 * width - 4] += err * 3
           imageData.data[currentPixel + 4 * width] += err * 5
           imageData.data[currentPixel + 4 * width + 4] += err * 1
-          data[currentPixel + 1] = data[currentPixel]
-          data[currentPixel + 2] = data[currentPixel]
+          imageData.data[currentPixel + 1] = data[currentPixel]
+          imageData.data[currentPixel + 2] = data[currentPixel]
         }
       }
       return imageData
     }
-    case 'floydStenbergRed': {
+    case 'floydSteinbergRed': {
+      for (let currentPixel = 0; currentPixel <= data.length; currentPixel += 4) {
+        if (isRed(data[currentPixel], data[currentPixel + 1], data[currentPixel + 2])) {
+          const newPixel = 255
+          const err = Math.floor((newPixel - data[currentPixel]) / 16)
+          imageData.data[currentPixel] = newPixel
+          imageData.data[currentPixel + 4] += err * 7
+          imageData.data[currentPixel + 4 * width - 4] += err * 3
+          imageData.data[currentPixel + 4 * width] += err * 5
+          imageData.data[currentPixel + 4 * width + 4] += err * 1
+          imageData.data[currentPixel + 1] = 0
+          imageData.data[currentPixel + 2] = 0
+        } else {
+          const newPixel = data[currentPixel] < DITHER_THRESHOLD ? 0 : 255
+          const err = Math.floor((data[currentPixel] - newPixel) / 16)
+          imageData.data[currentPixel] = newPixel
+          imageData.data[currentPixel + 4] += err * 7
+          imageData.data[currentPixel + 4 * width - 4] += err * 3
+          imageData.data[currentPixel + 4 * width] += err * 5
+          imageData.data[currentPixel + 4 * width + 4] += err * 1
+          imageData.data[currentPixel + 1] = data[currentPixel]
+          imageData.data[currentPixel + 2] = data[currentPixel]
+        }
+      }
       return imageData
     }
     default: {
