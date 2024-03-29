@@ -10,6 +10,7 @@ def init():
 
     wifi = connect_to_wifi()
     if not wifi:
+        from lib.wifi import activate_wifi_captive_portal
         activate_wifi_captive_portal()
 
     from lib.api_server import start_api_server

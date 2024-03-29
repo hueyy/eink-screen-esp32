@@ -49,7 +49,7 @@ sudo usermod -aG dialout $USER
 
 # re-enter your shell
 exec su -l $USER
-cd eink-screen
+cd eink-screen/mcu
 poetry shell
 ```
 
@@ -59,7 +59,7 @@ Proceed to install the new firmware:
 
 ```bash
 esptool.py --port /dev/ttyACM0 erase_flash
-esptool.py --chip esp32 --port /dev/ttyACM0 write_flash -z 0x1000 ~/Downloads/esp32-20230426-v1.20.0.bin
+esptool.py --chip esp32 --port /dev/ttyACM0 write_flash -z 0x1000 ~/Downloads/ESP32_GENERIC-20240222-v1.22.2.bin
 ```
 
 ### File structure
@@ -121,6 +121,12 @@ You can get a Python REPL prompt over the serial port:
 repl
 ```
 
+You can reboot the device using the following command:
+
+```
+repl ~ import machine ~ machine.soft_reset() ~
+```
+
 The controls are emacs-style, so use `[C-x]`, i.e. <kbd>Ctrl-A</kbd> <kbd>Ctrl-X</kbd>.
 
 Useful development commands:
@@ -128,7 +134,7 @@ Useful development commands:
 ```bash
 ./scripts/flash_micropython.sh # to re-flash micropython firmware if the MCU freezes up
 ./scripts/flash_src.sh # to transfer and run new files in a single command
-./scripts/flash_src.sh # to transfer and run new files, removing old files and reinstalling dependencies
+./scripts/flash_src_full.sh # to transfer and run new files, removing old files and reinstalling dependencies
 ```
 
 ### MicroPython dependencies
@@ -136,7 +142,7 @@ Useful development commands:
 These have to be installed after the MicroPython framework has been flashed:
 
 ```
-poetry run mpremote mip install github:miguelgrinberg/microdot/src/microdot.py github:miguelgrinberg/microdot/src/microdot_asyncio.py
+poetry run mpremote mip install github:miguelgrinberg/microdot/src/microdot.py 
 ```
 
 The `./scripts/flash_src_full.sh` script automatically installs the MicroPython dependencies.

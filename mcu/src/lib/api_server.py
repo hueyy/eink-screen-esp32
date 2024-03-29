@@ -35,7 +35,7 @@ def start_api_server():
         return {"status": "OK"}
 
     @app.route("/receive_data/", methods=["POST", "OPTIONS"])
-    def api_receive_data(request):
+    async def api_receive_data(request):
         if not request.stream:
             return {"error": "body missing"}, 400
 
@@ -53,7 +53,7 @@ def start_api_server():
         d.epd.begin_black_data_transmission()
 
         while content_length > 0:
-            chunk = request.stream.read(min(content_length, CHUNK_SIZE))
+            chunk = await request.stream.read(min(content_length, CHUNK_SIZE))
 
             # end of black data and start of red data
             if content_length == half_content_length:

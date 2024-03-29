@@ -105,17 +105,4 @@ def activate_wifi_captive_portal():
 
     activate_ap()
 
-    loop = asyncio.get_event_loop()
-
-    from lib.wifi_server import start_wifi_server
-
-    loop.create_task(start_wifi_server())
-
-    # from lib.dns import run_dns_server
-
-    # loop.create_task(run_dns_server())
-
-    loop.run_forever()
-    loop.close()
-
     return
