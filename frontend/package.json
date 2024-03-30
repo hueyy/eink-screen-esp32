@@ -9,6 +9,8 @@
     "deploy": "netlify deploy --prod --dir=dist"
   },
   "dependencies": {
+    "dither-me-this": "^0.0.5",
+    "multidither": "^1.0.5",
     "preact": "^10.15.1",
     "preact-router": "^4.1.1"
   },

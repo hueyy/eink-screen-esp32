@@ -23,10 +23,9 @@ const imageRotationOptions = [
 ]
 
 const ditheringOptions = [
-  { content: 'Binary (i.e. colour reduction only)', value: Options.dithering.binary },
+  { content: 'None', value: Options.dithering.none },
   { content: 'Ternary (including red)', value: Options.dithering.ternary },
-  { content: 'Floyd-Steinberg', value: Options.dithering.floydSteinberg },
-  { content: 'Floyd-Steinberg (with red)', value: Options.dithering.floydSteinbergRed }
+  { content: 'Floyd-Steinberg', value: Options.dithering.floydSteinbergRed },
 ]
 
 const ImageOptions: FunctionComponent<Props> = ({

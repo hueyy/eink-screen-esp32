@@ -24,7 +24,7 @@ const ImagePage: FunctionComponent = () => {
       const image = new Image()
       image.src = currentImage
 
-      image.onload = () => {
+      image.onload = async () => {
         if (canvasRef.current != null) {
           const ctx = canvasRef.current.getContext('2d') as CanvasRenderingContext2D
           ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
@@ -49,7 +49,7 @@ const ImagePage: FunctionComponent = () => {
           ctx.restore()
 
           const rawImageData = ctx.getImageData(0, 0, WIDTH, HEIGHT)
-          const ditheredImageData = ditherImageData(rawImageData, currentStore.dithering)
+          const ditheredImageData = await ditherImageData(rawImageData, currentStore.dithering)
           ctx.putImageData(ditheredImageData, 0, 0)
         }
       }

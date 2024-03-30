@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'preact/hooks'
-import { convertImageDataToMonoHLSB } from '../utils/Utils'
+import { convertImageDataToMonoRedHLSB } from '../utils/Utils'
 import Api from '../utils/Api'
 import type { FunctionComponent } from 'preact'
 import Container from '../components/Container'
@@ -37,7 +37,7 @@ const TextPage: FunctionComponent = () => {
     const ctx = onPreview()
     if (ctx != null) {
       const rawImageData = ctx.getImageData(0, 0, WIDTH, HEIGHT).data
-      const imageData = convertImageDataToMonoHLSB(rawImageData, WIDTH, HEIGHT)
+      const imageData = convertImageDataToMonoRedHLSB(rawImageData, WIDTH, HEIGHT)
       void Api.postImageData(store.host, imageData)
     }
   }, [onPreview, store])
