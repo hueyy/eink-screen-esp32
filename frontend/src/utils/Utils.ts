@@ -3,6 +3,12 @@ const DITHER_THRESHOLD = 128
 const WIDTH = 800
 const HEIGHT = 480
 
+const colourPalette: Colour[] = [
+  [0, 0, 0],
+  [255, 255, 255],
+  [255, 0, 0],
+]
+
 const determineBit = (
   red: number,
   green: number,
@@ -107,7 +113,7 @@ export const convertImageDataToMonoRedHLSB = (
     const blue = inputBuffer[i + 2]
     const alpha = inputBuffer[i + 3]
 
-    if (isRed(red, green, blue)) {
+    if (isRed(red, green, blue, 40)) {
       currentRedByte += 0
       currentBlackByte += 2 ** byteIndex
     } else {
@@ -133,12 +139,6 @@ export const convertImageDataToMonoRedHLSB = (
   result.set(redByteBuffer, blackByteBuffer.length)
   return result
 }
-
-const colourPalette: Colour[] = [
-  [0, 0, 0],
-  [255, 255, 255],
-  [255, 0, 0],
-]
 
 export const ditherImageData = async (imageData: ImageData, ditherMode: Store['dithering']): Promise<ImageData> => {
   const { data, width } = imageData

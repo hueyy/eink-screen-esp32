@@ -10,10 +10,11 @@ interface Props {
   onPreview: (inputStore?: typeof Storage.defaultStore) => void
 }
 
-// const imageSizingOptions = [
-//   { content: 'Full width', value: Options.imageSizing.fullWidth },
-//   { content: 'Full height', value: Options.imageSizing.fullHeight }
-// ]
+const imageSizingOptions = [
+  { content: `Auto`, value: Options.imageSizing.auto },
+  { content: 'Full width', value: Options.imageSizing.fullWidth },
+  { content: 'Full height', value: Options.imageSizing.fullHeight }
+]
 
 const imageRotationOptions = [
   { content: '0 degrees', value: Options.imageRotation[0] },
@@ -34,14 +35,14 @@ const ImageOptions: FunctionComponent<Props> = ({
 }) => {
   const { store, setStore } = useStore()
 
-  // const onChangeImageSizing = useCallback((value: string) => {
-  //   const newStore: typeof store = {
-  //     ...store,
-  //     imageSizing: value as (typeof store)['imageSizing']
-  //   }
-  //   setStore(newStore)
-  //   onPreview(newStore)
-  // }, [store, setStore, onPreview])
+  const onChangeImageSizing = useCallback((value: string) => {
+    const newStore: typeof store = {
+      ...store,
+      imageSizing: value as (typeof store)['imageSizing']
+    }
+    setStore(newStore)
+    onPreview(newStore)
+  }, [store, setStore, onPreview])
 
   const onChangeImageRotation = useCallback((value: string) => {
     const newStore: typeof store = {
@@ -63,12 +64,12 @@ const ImageOptions: FunctionComponent<Props> = ({
 
   return (
     <div className={`${className}`}>
-      {/* <SelectInput
+      <SelectInput
         label="Image sizing"
         options={imageSizingOptions}
         onChange={onChangeImageSizing}
         value={store.imageSizing}
-      /> */}
+      />
       <SelectInput
         label="Image rotation"
         options={imageRotationOptions}

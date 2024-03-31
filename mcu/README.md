@@ -1,15 +1,22 @@
 # MCU
 
+## Hardware
+
+Chip is ESP32-D0WDQ6 (revision v1.0), i.e. [ESP32 driver board from Waveshare](https://www.waveshare.com/e-paper-esp32-driver-board.htm). It has the following specifications:
+
+- WiFi:  802.11b/g/n
+- Flash size: 4MB
+- SRAM size: 520KB
+- ROM size: 448KB
+
+The screen is a Waveshare [7.5inch_e-Paper_HAT_(B)](https://www.waveshare.com/wiki/7.5inch_e-Paper_HAT_(B)).
+
 ## Development
 
 1. [Installing Poetry dependencies](#install-poetry-dependencies)
 2. [Install MicroPython firmware](#install-micropython-firmware)
 3. Understand the [file structure](#file-structure)
 4. Run code with [RShell](#rshell)
-
-Chip is ESP32-D0WDQ6 (revision v1.0).
-
-Screen is Waveshare [7.5inch_e-Paper_HAT_(B)](https://www.waveshare.com/wiki/7.5inch_e-Paper_HAT_(B)).
 
 ### Install Poetry dependencies
 

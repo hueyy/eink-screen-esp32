@@ -1,4 +1,5 @@
 const imageSizing = {
+  auto: 'auto',
   fullWidth: 'fullWidth',
   fullHeight: 'fullHeight'
 } as const

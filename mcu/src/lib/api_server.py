@@ -1,7 +1,6 @@
 # MicroDot does not support HTTPS and will throw a UnicodeError if
 # accessed via HTTPS: https://github.com/miguelgrinberg/microdot/issues/62
 
-
 def start_api_server():
     from microdot import Microdot, Request
 
@@ -22,7 +21,9 @@ def start_api_server():
 
     @app.route("/")
     def index(request):
-        return {"status": "OK"}
+        return dict(
+            status="OK",
+        )
 
     @app.route("/clear/", methods=["POST", "OPTIONS"])
     def api_clear(request):

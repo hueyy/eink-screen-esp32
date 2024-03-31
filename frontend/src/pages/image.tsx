@@ -31,18 +31,38 @@ const ImagePage: FunctionComponent = () => {
           ctx.fillStyle = 'white'
           ctx.fillRect(0, 0, WIDTH, HEIGHT)
           ctx.save()
+
           ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2)
           const rotation = Number.parseInt(currentStore.imageRotation, 10)
           ctx.rotate(rotation * Math.PI / 180)
-          const ratio = Math.min(ctx.canvas.width / image.width, ctx.canvas.height / image.height)
+
+          let ratio = Math.min(ctx.canvas.width / image.width, ctx.canvas.height / image.height)
+          switch (currentStore.imageSizing) {
+            case `fullHeight`: {
+              ratio = ctx.canvas.height / image.height
+              break
+            }
+
+            case 'fullWidth': {
+              ratio = ctx.canvas.width / image.width
+              break
+            }
+
+            default: {
+              break
+            }
+          }
+          const offsetX = Math.round((ctx.canvas.width - image.width * ratio) / 2) - ctx.canvas.width / 2
+          const offsetY = Math.round((ctx.canvas.height - image.height * ratio) / 2) - ctx.canvas.height / 2
+
           ctx.drawImage(
             image,
             0,
             0,
             image.width,
             image.height,
-            Math.round((ctx.canvas.width - image.width * ratio) / 2) - ctx.canvas.width / 2,
-            Math.round((ctx.canvas.height - image.height * ratio) / 2) - ctx.canvas.height / 2,
+            offsetX,
+            offsetY,
             image.width * ratio,
             image.height * ratio
           )
