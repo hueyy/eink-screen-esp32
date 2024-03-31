@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "backend"
+version = "0.0.1"
+description = ""
+authors = ["Huey Lee <hello@huey.xyz>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+flask = "^3.0.2"
+flask-htmx = "^0.3.2"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.1.1"
+mypy = "^1.8.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
