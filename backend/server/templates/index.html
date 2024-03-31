@@ -4,7 +4,14 @@ Huey's eink screen
 {% endblock %}
 
 {% block body %}
-<div>
-  Hello
+<div class="max-w-screen-md mx-auto">
+  {% with content="Huey's eInk Screen" %}
+  {% include "header.html" with context %}
+  {% endwith %}
+  <div class="flex flex-col gap-4 my-6 mx-2">
+    <a class="bg-slate-200 px-4 py-2" href="/text">Text</a>
+    <a class="bg-slate-200 px-4 py-2" href="/image">Images</a>
+    <!-- <Link href="/toots" text={'Toots'} /> -->
+  </div>
 </div>
 {% endblock %}
