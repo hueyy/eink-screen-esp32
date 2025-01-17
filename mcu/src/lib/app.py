@@ -1,16 +1,4 @@
 def init():
-    import gc
-
-    gc.enable()
-    gc.threshold(10000)
-    gc.collect()
-
-    from lib.RTC import store_rtc_value, read_rtc_value
-    mode = read_rtc_value("mode")
-    if mode is None:
-        mode = "REMOTE"
-        store_rtc_value(mode)
-
     # connect to WiFi
     from lib.wifi import connect_to_wifi
 

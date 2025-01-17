@@ -8,6 +8,7 @@ Uses [Preact](https://preactjs.com/) and [Vite](https://vitejs.dev/).
 
 ```
 pnpm i
+pnpm run dev
 ```
 
 Firefox does not support and [is not planning to support Web Bluetooth](https://mozilla.github.io/standards-positions/#web-bluetooth). This web app therefore only supports Chromium / Google Chrome.

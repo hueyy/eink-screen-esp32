@@ -9,15 +9,16 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
-freetype-py = "^2.3.0"
+freetype-py = "^2.5.1"
 
 
 [tool.poetry.group.dev.dependencies]
-mpremote = "^1.20.0"
-mypy = "^1.2.0"
-black = "^23.3.0"
-esptool = "^4.5.1"
-rshell = "^0.0.31"
+mpremote = "^1.24.1"
+mypy = "^1.14.1"
+black = "^24.10.0"
+rshell = "^0.0.36"
+mpflash = "^1.24.5"
+pyudev = "^0.24.3"
 
 [build-system]
 requires = ["poetry-core"]

@@ -1,3 +1,7 @@
 # Backend
 
-This backend is intended to run on a Raspberry Pi Zero 2. 
+```bash
+poetry install
+poetry shell
+flask --app server/server run
+```

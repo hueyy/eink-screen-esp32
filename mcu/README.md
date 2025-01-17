@@ -2,7 +2,7 @@
 
 ## Hardware
 
-Chip is ESP32-D0WDQ6 (revision v1.0), i.e. [ESP32 driver board from Waveshare](https://www.waveshare.com/e-paper-esp32-driver-board.htm). It has the following specifications:
+The chip is ESP32-D0WDQ6 (revision v1.0), i.e. [ESP32 driver board from Waveshare](https://www.waveshare.com/e-paper-esp32-driver-board.htm). It has the following specifications:
 
 - WiFi:  802.11b/g/n
 - Flash size: 4MB
@@ -29,44 +29,35 @@ poetry install
 
 ### Install MicroPython firmware
 
-Enter the virtualenv created by Poetry:
-
-```bash
+```shell
 poetry shell
-```
-
-Identify the serial port your device is connected to:
-
-```bash
-python -m serial.tools.list_ports
+mpflash list
 ```
 
 Example output:
 
-```bash
-/dev/ttyACM0
-1 ports found
+```shell
+                              Connected boards
+┏━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━┳━━━━━━━┓
+┃Serial      ┃Family     ┃Port ┃Board                          ┃CPU  ┃Version┃
+┡━━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━╇━━━━━━━┩
+│/dev/ttyACM0│micropython│esp32│ESP32_GENERIC                  │ESP32│v1.22.2│
+│            │           │     │Generic ESP32 module with ESP32│     │       │
+└────────────┴───────────┴─────┴───────────────────────────────┴─────┴───────┘
 ```
 
-If the serial port is inaccessible, you may need to give yourself the necessary permissions:
+Download the [latest stable MicroPython firmware](https://micropython.org/download/esp32/):
 
-```bash
-sudo usermod -aG tty $USER
-sudo usermod -aG dialout $USER
-
-# re-enter your shell
-exec su -l $USER
-cd eink-screen/mcu
-poetry shell
+```shell
+mpflash download --board ESP32_GENERIC --version ?
 ```
 
-Download the [latest stable MicroPython firmware](https://micropython.org/download/esp32/).
+This uses [mpflash](https://github.com/Josverl/micropython-stubber/tree/main/src/mpflash) to automatically download the MicroPython firmware. 
 
 Proceed to install the new firmware:
 
-```bash
-esptool.py --port /dev/ttyACM0 erase_flash
-esptool.py --chip esp32 --port /dev/ttyACM0 write_flash -z 0x1000 ~/Downloads/ESP32_GENERIC-20240222-v1.22.2.bin
+```shell
+mpflash flash --board ESP32_GENERIC --serial ?
 ```
 
 ### File structure
@@ -88,7 +79,7 @@ When developing, my preference is to use a `src/test.py` file:
 ```bash
 mpremote mount src
 import test
-```
+```a
 
 Use <kbd>Ctrl</kbd><kbd>D</kbd> to soft reload the device and remount the directory.
 
@@ -139,7 +130,6 @@ The controls are emacs-style, so use `[C-x]`, i.e. <kbd>Ctrl-A</kbd> <kbd>Ctrl-X
 Useful development commands:
 
 ```bash
-./scripts/flash_micropython.sh # to re-flash micropython firmware if the MCU freezes up
 ./scripts/flash_src.sh # to transfer and run new files in a single command
 ./scripts/flash_src_full.sh # to transfer and run new files, removing old files and reinstalling dependencies
 ```
