@@ -1,0 +1,18 @@
+{% extends "base.jinja" %}
+{% block title %}
+Huey's eink screen
+{% endblock %}
+
+{% block body %}
+<div class="max-w-screen-md mx-auto">
+  {% with content="Huey's eInk Screen" %}
+  {% include "header.jinja" with context %}
+  {% endwith %}
+  <div class="flex flex-col gap-4 my-6 mx-2">
+    {% from "components.jinja" import link %}
+    {{ link("/text", "Text") }}
+    {{ link("/image", "Image") }}
+    {{ link("/toots", "Toots") }}
+  </div>
+</div>
+{% endblock %}

@@ -1,7 +1,14 @@
 # Backend
 
-```bash
-poetry install
-poetry shell
-flask --app server/server run
+## Development
+
+```shell
+devenv shell
+devenv up
+```
+
+## Deployment
+
+```shell
+devenv shell build
 ```

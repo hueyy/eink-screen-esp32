@@ -1,3 +1,14 @@
 /node_modules
 __pycache__
-/server/static/styles
+/server/static/styles/main.css
+/server/static/scripts/htmx.min.js
+
+# Devenv
+.devenv*
+devenv.local.nix
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml

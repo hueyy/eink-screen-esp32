@@ -1,0 +1,41 @@
+{% extends "base.jinja" %}
+{% block title %}
+Text input - Huey's eink screen
+{% endblock %}
+
+{% block body %}
+<div class="max-w-screen-md mx-auto">
+  {% with content="Text", back_button=true %}
+  {% include "header.jinja" with context %}
+  {% endwith %}
+
+  <form class="flex flex-col items-start py-6 px-2">
+    <input class="my-4 px-4 py-2 border border-neutral-500" type="text" placeholder="Enter string..." id="input_text" />
+    {% from "components.jinja" import primary_button %}
+    {{ primary_button("SUBMIT") }}
+  </form>
+
+  {% include "canvas.jinja" %}
+</div>
+
+<script>
+  const canvas = document.getElementById("preview")
+  const ctx = canvasRef.current.getContext('2d') as CanvasRenderingContext2D
+
+  const updatePreview = () => {
+    const text = document.getElementById("input_text").value
+
+    ctx.fillStyle = 'white'
+    ctx.fillRect(0, 0, 800, 400)
+
+    ctx.fillStyle = 'black'
+    ctx.font = '72px sans-serif'
+    ctx.fillText(text, 10, 80)
+  }
+</script>
+
+{# const rawImageData = ctx.getImageData(0, 0, WIDTH, HEIGHT).data
+    const imageData = convertImageDataToMonoRedHLSB(rawImageData, WIDTH, HEIGHT)
+    void Api.postImageData(store.host, imageData)
+  #}
+{% endblock %}

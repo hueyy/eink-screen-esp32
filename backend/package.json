@@ -1,16 +1,9 @@
 {
-  "name": "backend",
-  "version": "0.0.1",
-  "description": "",
-  "scripts": {
-    "dev": "tailwindcss -i ./server/styles/main.css -o ./server/static/styles/main.css --watch",
-    "build": "tailwindcss -i ./server/styles/main.css -o ./server/static/styles/main.css --minify",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "dependencies": {
-    "tailwindcss": "^3.4.3"
-  },
-  "devDependencies": {
-    "cross-env": "^7.0.3"
-  }
+	"name": "backend",
+	"version": "0.0.1",
+	"description": "",
+	"dependencies": {
+		"htmx.org": "^1.9.12",
+		"tailwindcss": "^3.4.17"
+	}
 }
