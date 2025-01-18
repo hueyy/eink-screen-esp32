@@ -10,32 +10,44 @@ Text input - Huey's eink screen
   {% endwith %}
 
   <form class="flex flex-col items-start py-6 px-2">
-    <input class="my-4 px-4 py-2 border border-neutral-500" type="text" placeholder="Enter string..." id="input_text" />
-    {% from "components.jinja" import primary_button %}
-    {{ primary_button("SUBMIT") }}
+    <label class="w-full">
+      <span class="block text-lg font-bold">Text</span>
+      <textarea class="w-full block my-4 px-4 py-2 border border-neutral-500 resize-y" type="text" placeholder="Enter string..." id="input_text"
+        hx-trigger="debounce:500ms changed" hx-on:input="updatePreview();"></textarea>
+    </label>
+
+    <label class="w-full">
+      <span class="block text-lg font-bold">Font Family</span>
+      <input class="w-full block my-4 px-4 py-2 border border-neutral-500 resize-y" type="text" placeholder="sans-serif" id="input_font"
+        hx-trigger="debounce:500ms changed" hx-on:input="updatePreview();" />
+    </label>
+
+    {% from "components.jinja" import primary_button, secondary_button %}
+    <div class="flex flex-row gap-4">
+      {{ primary_button("SUBMIT") }}
+      {{ secondary_button("CLEAR") }}
+    </div>
   </form>
 
   {% include "canvas.jinja" %}
 </div>
 
 <script>
-  const canvas = document.getElementById("preview")
-  const ctx = canvasRef.current.getContext('2d') as CanvasRenderingContext2D
-
   const updatePreview = () => {
     const text = document.getElementById("input_text").value
+    const font = document.getElementById("input_font").value || 'sans-serif'
 
     ctx.fillStyle = 'white'
-    ctx.fillRect(0, 0, 800, 400)
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
 
     ctx.fillStyle = 'black'
-    ctx.font = '72px sans-serif'
-    ctx.fillText(text, 10, 80)
+    ctx.font = `72px ${font}`
+    ctx.fillText(text, 20, 80)
   }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    updatePreview()
+  })
 </script>
 
-{# const rawImageData = ctx.getImageData(0, 0, WIDTH, HEIGHT).data
-    const imageData = convertImageDataToMonoRedHLSB(rawImageData, WIDTH, HEIGHT)
-    void Api.postImageData(store.host, imageData)
-  #}
 {% endblock %}

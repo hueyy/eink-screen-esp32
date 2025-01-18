@@ -25,17 +25,36 @@
   };
 
   processes = {
-    flask.exec = "flask --debug --app server/server run";
+    flask.exec = "cp-htmx && dev-flask";
     tailwind.exec = "dev-tailwind";
   };
 
-  scripts.dev-tailwind.exec = "pnpm exec tailwindcss -i ./server/styles/main.css -o ./server/static/styles/main.css --watch";
+  scripts.dev-flask.exec = "flask --debug --app server/server run";
+
+  scripts.dev-tailwind.exec = "pnpm exec tailwindcss --watch -i ./server/styles/main.css -o ./server/static/styles/main.css";
   scripts.build-tailwind.exec = "pnpm exec tailwindcss -i ./server/styles/main.css -o ./server/static/styles/main.css --minify";
 
   scripts.cp-htmx.exec = "cp -f node_modules/htmx.org/dist/htmx.min.js server/static/scripts/htmx.min.js";
 
+  services.caddy = {
+    enable = true;
+    virtualHosts."http://localhost:8000" = {
+      extraConfig = ''
+        encode gzip
+        handle_path /healthcheck {
+          respond "OK"
+        }
+
+        handle {
+          reverse_proxy localhost:5000
+        }
+      '';
+    };
+  };
+
   git-hooks.hooks = {
     black.enable = true;
     biome.enable = true;
+    nixpkgs-fmt.enable = true;
   };
 }
