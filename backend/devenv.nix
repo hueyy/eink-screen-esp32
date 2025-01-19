@@ -38,18 +38,28 @@
 
   services.caddy = {
     enable = true;
-    virtualHosts."http://localhost:8000" = {
-      extraConfig = ''
-        encode gzip
+    config = ''
+      {
+        debug
+      }
+
+      http://localhost:8000 {
+        encode zstd gzip
         handle_path /healthcheck {
           respond "OK"
+        }
+
+        handle /static/* {
+          uri strip_prefix /static
+          root server/static
+          file_server
         }
 
         handle {
           reverse_proxy localhost:5000
         }
-      '';
-    };
+      }
+    '';
   };
 
   git-hooks.hooks = {

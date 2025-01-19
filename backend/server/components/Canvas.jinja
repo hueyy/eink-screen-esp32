@@ -1,62 +1,47 @@
 <canvas class="border border-black w-full max-w-full mx-auto" id="preview" width="800" height="480"></canvas>
 
 <script>
-  const CANVAS_WIDHT = 800
+  const CANVAS_WIDTH = 800
   const CANVAS_HEIGHT = 400
   const HOSTNAME = "http://localhost:8000"
 
-  const canvas = document.getElementById("preview")
-  const ctx = canvas.getContext('2d')
-
   const DITHER_THRESHOLD = 128
 
-  const colourPalette: Colour[] = [
+  const colourPalette = [
     [0, 0, 0],
     [255, 255, 255],
     [255, 0, 0],
   ]
 
-  const determineBit = (
-    red: number,
-    green: number,
-    blue: number,
-    alpha: number
-  ): boolean => {
+  const determineBit = (red, green, blue, alpha) => {
     // true is white
     // false is black
     if (alpha < 127) {
       return true
-    } else if ((red + blue + green) / 3 > DITHER_THRESHOLD) {
-      return true
-    } else {
-      return false
     }
+    if ((red + blue + green) / 3 > DITHER_THRESHOLD) {
+      return true
+    }
+    return false
   }
 
-  const getAverageLuminosity = ([r, g, b]: Colour): number => (
-    (r + g + b) / 3
-  )
+  const getAverageLuminosity = ([r, g, b]) => (r + g + b) / 3
 
-  const getNearest = (palette: Colour[], inputColour: Colour): number => {
+  const getNearest = (palette, inputColour) => {
     const distances = palette.map((p) => getColourDistance(p, inputColour))
     const lowest = Math.min(...distances)
-    const index = distances.findIndex(d => lowest === d)
+    const index = distances.findIndex((d) => lowest === d)
     return index
   }
 
-  const isRed = (red: number, green: number, blue: number, threshold = 50): boolean => {
-    return red >= (255 - threshold) && green <= threshold && blue <= threshold
+  const isRed = (red, green, blue, threshold = 50) => {
+    return red >= 255 - threshold && green <= threshold && blue <= threshold
   }
 
-  const getColourDistance = ([r1, g1, b1]: Colour, [r2, g2, b2]: Colour): number => (
-    Math.pow(r2 - r1, 2) + Math.pow(g2 - g1, 2) + Math.pow(b2 - b1, 2)
-  )
+  const getColourDistance = ([r1, g1, b1], [r2, g2, b2]) =>
+    (r2 - r1) ** 2 + (g2 - g1) ** 2 + (b2 - b1) ** 2
 
-  export const convertImageDataToMonoHLSB = (
-    inputBuffer: Uint8ClampedArray,
-    width: number,
-    height: number
-  ): Uint8Array => {
+  export const convertImageDataToMonoHLSB = (inputBuffer, width, height) => {
     // Buffer should contain a 1-dimensional array of integers from 0-255
     // in the RGBA format, representing pixels proceeding from left to
     // right and then downwards
@@ -70,18 +55,16 @@
     let currentByte = 0
     let byteIndex = 7
 
-    const newByteBuffer = new Uint8Array(width * height / 8)
+    const newByteBuffer = new Uint8Array((width * height) / 8)
     for (let i = 0; i < inputBuffer.length; i += 4) {
       const red = inputBuffer[i]
       const green = inputBuffer[i + 1]
       const blue = inputBuffer[i + 2]
       const alpha = inputBuffer[i + 3]
-      currentByte += determineBit(red, green, blue, alpha)
-        ? 2 ** byteIndex
-        : 0
+      currentByte += determineBit(red, green, blue, alpha) ? 2 ** byteIndex : 0
 
       if (byteIndex === 0) {
-        newByteBuffer[(i - 28) / 32] = currentByte // one iteration before 32
+        newByteBuffer[(i - 28) / 32] = currentByte
         currentByte = 0
         byteIndex = 7
       } else {
@@ -92,11 +75,7 @@
     return newByteBuffer
   }
 
-  export const convertImageDataToMonoRedHLSB = (
-    inputBuffer: Uint8ClampedArray,
-    width: number,
-    height: number
-  ): Uint8Array => {
+  export const convertImageDataToMonoRedHLSB = (inputBuffer, width, height) => {
     // Buffer should contain a 1-dimensional array of integers from 0-255
     // in the RGBA format, representing pixels proceeding from left to
     // right and then downwards
@@ -112,8 +91,8 @@
     let currentRedByte = 0
     let byteIndex = 7
 
-    const blackByteBuffer = new Uint8Array(width * height / 8)
-    const redByteBuffer = new Uint8Array(width * height / 8)
+    const blackByteBuffer = new Uint8Array((width * height) / 8)
+    const redByteBuffer = new Uint8Array((width * height) / 8)
     for (let i = 0; i < inputBuffer.length; i += 4) {
       const red = inputBuffer[i]
       const green = inputBuffer[i + 1]
@@ -147,29 +126,51 @@
     return result
   }
 
-  export const ditherImageData = async (imageData: ImageData, ditherMode: Store['dithering']): Promise<ImageData> => {
+  export const ditherImageData = async (imageData, ditherMode) => {
     const { data, width } = imageData
     switch (ditherMode) {
       // TODO: Bill Atkinson dithering and Riemersma dithering?
-      case 'none': {
+      case "none": {
         return imageData
       }
-      case 'binary': {
-        for (let currentPixel = 0; currentPixel <= data.length; currentPixel += 4) {
-          const averageLuminosity = (data[currentPixel] + data[currentPixel + 1] + data[currentPixel + 2]) / 3
+      case "binary": {
+        for (
+          let currentPixel = 0;
+          currentPixel <= data.length;
+          currentPixel += 4
+        ) {
+          const averageLuminosity =
+            (data[currentPixel] +
+              data[currentPixel + 1] +
+              data[currentPixel + 2]) /
+            3
           data[currentPixel] = averageLuminosity < DITHER_THRESHOLD ? 0 : 255
           data[currentPixel + 1] = data[currentPixel]
           data[currentPixel + 2] = data[currentPixel]
         }
         return imageData
       }
-      case 'ternary': {
-        for (let currentPixel = 0; currentPixel <= data.length; currentPixel += 4) {
-          if (isRed(data[currentPixel], data[currentPixel + 1], data[currentPixel + 2])) {
+      case "ternary": {
+        for (
+          let currentPixel = 0;
+          currentPixel <= data.length;
+          currentPixel += 4
+        ) {
+          if (
+            isRed(
+              data[currentPixel],
+              data[currentPixel + 1],
+              data[currentPixel + 2],
+            )
+          ) {
             data[currentPixel] = 255
             data[currentPixel + 1] = data[currentPixel + 2] = 0
           } else {
-            const averageLuminosity = (data[currentPixel] + data[currentPixel + 1] + data[currentPixel + 2]) / 3
+            const averageLuminosity =
+              (data[currentPixel] +
+                data[currentPixel + 1] +
+                data[currentPixel + 2]) /
+              3
             data[currentPixel] = averageLuminosity < DITHER_THRESHOLD ? 0 : 255
             data[currentPixel + 1] = data[currentPixel]
             data[currentPixel + 2] = data[currentPixel]
@@ -177,12 +178,16 @@
         }
         return imageData
       }
-      case 'floydSteinberg': {
-        for (let currentPixel = 0; currentPixel < data.length; currentPixel += 4) {
+      case "floydSteinberg": {
+        for (
+          let currentPixel = 0;
+          currentPixel < data.length;
+          currentPixel += 4
+        ) {
           const averageLuminosity = getAverageLuminosity([
             data[currentPixel],
             data[currentPixel + 1],
-            data[currentPixel + 2]
+            data[currentPixel + 2],
           ])
           if (averageLuminosity < 240 && averageLuminosity > 20) {
             const newPixel = data[currentPixel] < DITHER_THRESHOLD ? 0 : 255
@@ -198,19 +203,23 @@
         }
         return imageData
       }
-      case 'floydSteinbergRed': {
-        for (let currentPixel = 0; currentPixel < data.length; currentPixel += 4) {
-
-          const nearestColourIndex = getNearest(
-            colourPalette,
-            [data[currentPixel], data[currentPixel + 1], data[currentPixel + 2]]
-          )
+      case "floydSteinbergRed": {
+        for (
+          let currentPixel = 0;
+          currentPixel < data.length;
+          currentPixel += 4
+        ) {
+          const nearestColourIndex = getNearest(colourPalette, [
+            data[currentPixel],
+            data[currentPixel + 1],
+            data[currentPixel + 2],
+          ])
           const newColour = colourPalette[nearestColourIndex]
 
-          const quantError: Colour = [
+          const quantError = [
             data[currentPixel] - newColour[0],
             data[currentPixel + 1] - newColour[1],
-            data[currentPixel + 2] - newColour[2]
+            data[currentPixel + 2] - newColour[2],
           ]
 
           imageData.data[currentPixel] = newColour[0]
@@ -218,9 +227,9 @@
           imageData.data[currentPixel + 2] = newColour[2]
 
           const x = (currentPixel / 4) % CANVAS_WIDTH
-          const y = Math.floor((currentPixel / 4) / CANVAS_WIDTH)
+          const y = Math.floor(currentPixel / 4 / CANVAS_WIDTH)
 
-          for (let [DX, DY, fraction] of [
+          for (const [DX, DY, fraction] of [
             [1, 0, 7 / 16],
             [-1, 1, 3 / 16],
             [0, 1, 5 / 16],
@@ -244,9 +253,12 @@
     }
   }
 
-  const postImageData = async (host: string, imageData: Uint8Array): Promise<Record<string, string>> => {
+  const postImageData = async (host, imageData) => {
     try {
-      const response = await fetch(`${host}/receive_data/`, { method: 'POST', body: imageData })
+      const response = await fetch(`${host}/receive_data/`, {
+        method: "POST",
+        body: imageData,
+      })
       return await response.json()
     } catch (error) {
       console.error(error)
@@ -254,19 +266,13 @@
     }
   }
 
-  const clearImage = async (host: string): Promise<Record<string, string>> => {
+  const clearImage = async (host) => {
     try {
-      const response = await fetch(`${host}/clear/`, { method: 'POST' })
+      const response = await fetch(`${host}/clear/`, { method: "POST" })
       return await response.json()
     } catch (error) {
       console.error(error)
       throw error
     }
-  }
-
-  const postImageData = () => {
-    const rawImageData = ctx.getImageData(0, 0, CANVAS_WIDHT, CANVAS_HEIGHT).data
-    const imageData = convertImageDataToMonoRedHLSB(rawImageData, CANVAS_WIDHT, CANVAS_HEIGHT)
-    void Api.postImageData(store.host, imageData)
-  }
+  };
 </script>
