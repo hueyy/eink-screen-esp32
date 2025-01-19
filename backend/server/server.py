@@ -17,6 +17,8 @@ catalog = Catalog()
 catalog.add_folder("server/screens")
 catalog.add_folder("server/components")
 
+CURRENT_FILE_PATH = "server/static/current"
+
 
 @app.route("/", methods=["GET"])
 def home():
@@ -28,9 +30,19 @@ def text():
     return catalog.render("TextInputScreen")
 
 
-@app.route("/current")
+@app.route("/current", methods=["HEAD", "PUT"])
+def put_current():
+    if not "image_data" in request.form:
+        return {"message": "image_data field missing"}, 400
+    with open(CURRENT_FILE_PATH, "w") as file:
+        file.write(request.form["image_data"])
+    return "OK"
+
+
+@app.route("/current", methods=["GET"])
 def current():
-    return
+    with open(CURRENT_FILE_PATH, "r") as file:
+        return file.read()
 
 
 if __name__ == "__main__":

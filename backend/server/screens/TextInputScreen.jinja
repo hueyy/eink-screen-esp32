@@ -4,7 +4,7 @@
       Text
     </Header>
 
-    <form class="flex flex-col items-start py-6 px-2">
+    <div class="flex flex-col items-start py-6 px-2">
       <label class="w-full">
         <span class="block text-lg font-bold">Text</span>
         <textarea class="w-full block my-4 px-4 py-2 border border-neutral-500 resize-y" type="text" placeholder="Enter string..." id="input_text"
@@ -18,17 +18,15 @@
       </label>
 
       <div class="flex flex-row gap-4">
-        <PrimaryButton>SUBMIT</PrimaryButton>
-        <SecondaryButton>CLEAR</SecondaryButton>
+        <PrimaryButton hx_put="/current" hx_include="#image_data">SUBMIT</PrimaryButton>
+        <SecondaryButton hx-on:click="clearImage();">CLEAR</SecondaryButton>
       </div>
-    </form>
+    </div>
 
     <Canvas />
   </div>
 
   <script>
-    const CANVAS_WIDTH = 800
-    const CANVAS_HEIGHT = 400
     const canvas = document.getElementById("preview")
     const ctx = canvas.getContext("2d")
 
@@ -42,6 +40,10 @@
       ctx.fillStyle = "black"
       ctx.font = `72px ${font}`
       ctx.fillText(text, 20, 80)
+
+      const rawImageData = ctx.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT).data
+      const imageData = convertImageDataToMonoRedHLSB(rawImageData, CANVAS_WIDTH, CANVAS_HEIGHT)
+      document.getElementById('image_data').value = imageData
     }
 
     document.addEventListener("DOMContentLoaded", () => {

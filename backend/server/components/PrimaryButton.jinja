@@ -1,3 +1,5 @@
-<button class="bg-indigo-700 text-white py-2 px-4 font-bold" type="submit">
+{#def hx_put="", hx_include="" #}
+
+<button class="bg-indigo-700 text-white py-2 px-4 font-bold" type="button" hx-put="{{ hx_put }}" hx-include="{{ hx_include }}">
   {{ content }}
 </button>
