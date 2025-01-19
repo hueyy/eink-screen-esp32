@@ -3,6 +3,7 @@
 {
   packages = [
     pkgs.git
+    pkgs.ngrok
   ];
 
   languages = {
@@ -43,19 +44,26 @@
         debug
       }
 
-      http://localhost:8000 {
-        encode zstd gzip
+      :8000 {
         handle_path /healthcheck {
           respond "OK"
         }
 
+        handle /static/current {
+          uri strip_prefix /static/current
+          root server/static/current
+          file_server
+        }
+
         handle /static/* {
+          encode zstd gzip
           uri strip_prefix /static
           root server/static
           file_server
         }
 
         handle {
+          encode zstd gzip
           reverse_proxy localhost:5000
         }
       }

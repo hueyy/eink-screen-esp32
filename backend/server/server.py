@@ -4,7 +4,7 @@ from flask_htmx import HTMX
 from werkzeug.middleware.proxy_fix import ProxyFix
 from jinjax import Catalog
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=None)
 
 assets = Environment(app)
 assets.init_app(app)
@@ -35,14 +35,9 @@ def put_current():
     if not "image_data" in request.form:
         return {"message": "image_data field missing"}, 400
     with open(CURRENT_FILE_PATH, "w") as file:
+        # convert from str to bytes
         file.write(request.form["image_data"])
     return "OK"
-
-
-@app.route("/current", methods=["GET"])
-def current():
-    with open(CURRENT_FILE_PATH, "r") as file:
-        return file.read()
 
 
 if __name__ == "__main__":

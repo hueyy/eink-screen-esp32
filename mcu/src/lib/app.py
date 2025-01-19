@@ -5,11 +5,15 @@ def init():
     wifi = connect_to_wifi()
     if not wifi:
         from lib.wifi import activate_wifi_captive_portal
+
         activate_wifi_captive_portal()
 
-    import uasyncio
+    from lib.api import fetch_screen
 
-    from lib.api_server import start_api_server
+    fetch_screen()
 
-    uasyncio.run(start_api_server())
+    # import uasyncio
 
+    # from lib.api_server import start_api_server
+
+    # uasyncio.run(start_api_server())
