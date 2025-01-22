@@ -1,0 +1,140 @@
+import usocket, ssl
+from micropython import const
+from lib.display import Display
+
+HOSTNAME = const("c15c-156-249-13-28.ngrok-free.app")
+
+CHUNK_SIZE = const(1000)  # 1KiB
+
+
+def capitalize_word(word: str):
+    return word[0].upper() + word[1:] if word else ""
+
+
+def capitalize_header_key(key: str):
+    return "-".join(capitalize_word(word) for word in key.split("-"))
+
+
+def parse_headers(header_string: str):
+    headers = {
+        capitalize_header_key(key.strip()): value.strip()
+        for line in header_string.split("\r\n")[1:]
+        if ":" in line
+        for key, value in [line.split(":", 1)]
+        if key and value
+    }
+    return headers
+
+
+def compose_request(etag: str):
+    headers = [
+        "GET /static/current HTTP/1.1",
+        f"Host: {HOSTNAME}",
+        "User-Agent: micropython-esp32-huey-eink-screen",
+        "Accept-Encoding: identity",
+    ]
+
+    if etag is not None and len(etag) > 0:
+        headers.append(f"If-None-Match: {etag}")
+
+    headers.extend(["Connection: close\r\n", ""])
+    return "\r\n".join(headers)
+
+
+def fetch_screen(etag=None):
+    try:
+        # Hostname to IP adddress
+        socket_address = usocket.getaddrinfo(HOSTNAME, 443)[0][-1]
+        # socket_address = usocket.getaddrinfo(HOSTNAME, 80)[0][-1]
+
+        s = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
+        s.connect(socket_address)
+        s.settimeout(60)
+
+        ssl_socket = ssl.wrap_socket(s)
+
+        request = compose_request(etag)
+        print("Making request: ")
+        print(request)
+
+        ssl_socket.write(request.encode())
+        # s.send(request.encode())
+
+        headers_complete: bool = False
+
+        content_length: int = 0
+        half_content_length: int = 0
+        new_etag = None
+        status_code = None
+
+        d = Display()
+        d.init_epd()
+        d.epd.begin_black_data_transmission()
+
+        while True:
+            chunk = ssl_socket.read(CHUNK_SIZE)
+            # chunk = s.recv(CHUNK_SIZE)
+
+            if not chunk:
+                print("No more chunks")
+                break
+
+            if not headers_complete:
+                header_end = chunk.find(b"\r\n\r\n")
+                if header_end != -1:
+                    headers_str = chunk[:header_end].decode()
+                    headers = parse_headers(headers_str)
+                    headers_complete = True
+                    print("Headers: ", headers)
+
+                    status_code = int(headers_str.split()[1])
+                    new_etag = headers.get("Etag")
+
+                    chunk = chunk[header_end + 4 :]
+
+                    if status_code == 304:  # Not Modified
+                        print("HTTP 304 Not Modified")
+                        break
+
+                    if status_code != 200:
+                        print("Non-200 status code: ", status_code)
+                        print(chunk)
+                        break
+
+                    content_length = int(headers.get("Content-Length"))
+
+                    if not (content_length > 0):
+                        print("Clearing screen")
+                        d.clear()
+                        break
+
+                    half_content_length = content_length // 2
+                else:
+                    print("Could not find end of header")
+                    print(chunk)
+
+            try:
+                if content_length == half_content_length:
+                    d.epd.send_data(0x92)
+                    d.epd.begin_red_data_transmission()
+
+                content_length -= len(chunk)
+                d.epd.send_data(chunk)
+
+            except Exception as e:
+                print("Error decoding chunk:", e)
+
+        ssl_socket.close()
+        # s.close()
+
+        if status_code == 200 and new_etag is not None:
+            etag = new_etag
+            print("Set Etag to: ", etag)
+
+            print("Updating screen")
+            d.epd.turn_on_display()
+
+    except Exception as e:
+        raise e
+
+    return etag

@@ -1,6 +1,7 @@
 # MicroDot does not support HTTPS and will throw a UnicodeError if
 # accessed via HTTPS: https://github.com/miguelgrinberg/microdot/issues/62
 
+
 def start_api_server():
     from microdot import Microdot, Request
 
@@ -55,6 +56,7 @@ def start_api_server():
 
         while content_length > 0:
             chunk = await request.stream.read(min(content_length, CHUNK_SIZE))
+            print(chunk)
 
             # end of black data and start of red data
             if content_length == half_content_length:

@@ -18,8 +18,8 @@
       </label>
 
       <div class="flex flex-row gap-4">
-        <PrimaryButton hx_put="/current" hx_include="#image_data">SUBMIT</PrimaryButton>
-        <SecondaryButton hx-on:click="clearImage();">CLEAR</SecondaryButton>
+        <PrimaryButton hx_put="/current" hx_on_config_request="configRequest(event);">SUBMIT</PrimaryButton>
+        <SecondaryButton hx-put="/current" hx_on_config_request="configRequest(event, '');">CLEAR</SecondaryButton>
       </div>
     </div>
 
@@ -40,14 +40,22 @@
       ctx.fillStyle = "black"
       ctx.font = `72px ${font}`
       ctx.fillText(text, 20, 80)
-
-      const rawImageData = ctx.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT).data
-      const imageData = convertImageDataToMonoRedHLSB(rawImageData, CANVAS_WIDTH, CANVAS_HEIGHT)
-      document.getElementById('image_data').value = imageData
     }
 
     document.addEventListener("DOMContentLoaded", () => {
       updatePreview()
-    });
+    })
+
+    const configRequest = (event, data) => {
+      if (typeof data === 'undefined') {
+        // use current imageData by default
+        const rawImageData = ctx.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT).data
+        const imageData = convertImageDataToMonoRedHLSB(rawImageData, CANVAS_WIDTH, CANVAS_HEIGHT)
+        event.detail.parameters['image_data'] = imageData
+      } else {
+        // if empty string specified
+        event.detail.parameters['image_data'] = ''
+      }
+    }
   </script>
 </BaseScreen>

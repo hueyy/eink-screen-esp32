@@ -1,5 +1,4 @@
 <canvas class="border border-black w-full max-w-full mx-auto" id="preview" width="800" height="480"></canvas>
-<input type="hidden" id="image_data" name="image_data" />
 
 <script>
   const CANVAS_WIDTH = 800
@@ -253,27 +252,4 @@
     }
   }
 
-  const postImageData = async (host, imageData) => {
-    try {
-      const response = await fetch(`/current/`, {
-        method: "PUT",
-        body: imageData,
-      })
-      return await response.json()
-    } catch (error) {
-      console.error(error)
-      throw error
-    }
-  }
-
-  const clearImage = async (host) => {
-    try {
-      const imageData = new Uint8Array((CANVAS_WIDTH * CANVAS_HEIGHT) / 8 * 2)
-      const response = await fetch(`/clear/`, { method: "PUT", body: imageData })
-      return await response.json()
-    } catch (error) {
-      console.error(error)
-      throw error
-    }
-  };
 </script>

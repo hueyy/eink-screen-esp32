@@ -34,9 +34,13 @@ def text():
 def put_current():
     if not "image_data" in request.form:
         return {"message": "image_data field missing"}, 400
-    with open(CURRENT_FILE_PATH, "w") as file:
-        # convert from str to bytes
-        file.write(request.form["image_data"])
+    if len(request.form["image_data"]) > 0:
+        with open(CURRENT_FILE_PATH, "wb") as file:
+            # convert from str to bytes
+            file.write(bytes(int(n) for n in request.form["image_data"].split(",")))
+    else:
+        with open(CURRENT_FILE_PATH, "w") as file:
+            file.write("")
     return "OK"
 
 

@@ -9,8 +9,15 @@ def init():
         activate_wifi_captive_portal()
 
     from lib.api import fetch_screen
+    import time
 
-    fetch_screen()
+    etag = None
+
+    while True:
+        print("Running fetch_screen")
+        etag = fetch_screen(etag)
+        print("fetch_screen done")
+        time.sleep(2)
 
     # import uasyncio
 
