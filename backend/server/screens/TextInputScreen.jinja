@@ -1,8 +1,10 @@
 <BaseScreen title="Text input - Huey's eink screen">
   <div class="max-w-screen-md mx-auto">
-    <Header back_button>
-      Text
+    <Header>
+      Huey's eInk Screen
     </Header>
+
+    <Canvas />
 
     <div class="flex flex-col items-start py-6 px-2">
       <label class="w-full">
@@ -16,19 +18,12 @@
         <input class="w-full block my-4 px-4 py-2 border border-neutral-500 resize-y" type="text" placeholder="sans-serif" id="input_font"
           hx-trigger="debounce:500ms changed" hx-on:input="updatePreview();" />
       </label>
-
-      <div class="flex flex-row gap-4">
-        <PrimaryButton hx_put="/current" hx_on_config_request="configRequest(event);">SUBMIT</PrimaryButton>
-        <SecondaryButton hx-put="/current" hx_on_config_request="configRequest(event, '');">CLEAR</SecondaryButton>
-      </div>
     </div>
-
-    <Canvas />
   </div>
 
   <script>
     const canvas = document.getElementById("preview")
-    const ctx = canvas.getContext("2d")
+    const ctx = canvas.getConterxt("2d")
 
     const updatePreview = () => {
       const text = document.getElementById("input_text").value

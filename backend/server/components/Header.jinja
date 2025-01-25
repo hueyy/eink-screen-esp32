@@ -1,13 +1,23 @@
 {#def back_button=false #}
 
-<div class="flex flex-row mt-6 select-none px-2">
-  {% if back_button %}
-  <a class="text-2xl flex-initial cursor-pointer flex flex-row items-center" href="/">
-    <div>⬅</div>
-    <div class="text-base align-middle ml-2">Back</div>
-  </a>
-  {% endif %}
-  <div class="text-2xl font-black flex-1 text-center">
-    {{content}}
+<header>
+  <div class="flex flex-row mt-6 select-none px-2">
+    {% if back_button %}
+    <a class="text-2xl flex-initial cursor-pointer flex flex-row items-center" href="/">
+      <div>⬅</div>
+      <div class="text-base align-middle ml-2">Back</div>
+    </a>
+    {% endif %}
+    <div class="text-2xl font-black flex-1 text-center">
+      {{content}}
+    </div>
   </div>
-</div>
+
+  <div class="flex flex-row gap-4 my-6">
+    {% for item in nav_items %}
+    <Link href={{ item.path }}>
+    {{ item.title }}
+    </Link>
+    {% endfor %}
+  </div>
+</header>

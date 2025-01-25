@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, redirect, url_for
 from flask_assets import Environment
 from flask_htmx import HTMX
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -13,21 +13,39 @@ htmx = HTMX(app)
 
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
-catalog = Catalog()
+NAV_ITEMS = [
+    {"title": "Image", "path": "/image"},
+    {"title": "Text", "path": "/text"},
+    {"title": "Toot", "path": "/toot"},
+]
+
+catalog = Catalog(
+    globals={
+        "current_path": lambda: request.path,
+        "nav_items": NAV_ITEMS,
+    }
+)
 catalog.add_folder("server/screens")
 catalog.add_folder("server/components")
 
 CURRENT_FILE_PATH = "server/static/current"
 
+DEFAULT_MODE: str = "image"
+
 
 @app.route("/", methods=["GET"])
 def home():
-    return catalog.render("HomeScreen")
+    return redirect(url_for(DEFAULT_MODE))
 
 
-@app.route("/text")
+@app.route("/text", methods=["GET"])
 def text():
     return catalog.render("TextInputScreen")
+
+
+@app.route("/image", methods=["GET"])
+def image():
+    return catalog.render("ImageInputScreen")
 
 
 @app.route("/current", methods=["HEAD", "PUT"])

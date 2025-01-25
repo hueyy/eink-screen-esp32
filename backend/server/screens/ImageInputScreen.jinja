@@ -1,0 +1,14 @@
+<BaseScreen title="Huey's eink screen">
+  <div class="max-w-screen-md mx-auto">
+    <Header>
+      Huey's eInk Screen
+    </Header>
+
+    <Canvas />
+
+    <div class="flex flex-row gap-4 mt-8">
+      <PrimaryButton hx_put="/current" hx_on_config_request="configRequest(event);">SUBMIT</PrimaryButton>
+      <SecondaryButton hx-put="/current" hx_on_config_request="configRequest(event, '');">CLEAR</SecondaryButton>
+    </div>
+  </div>
+</BaseScreen>
