@@ -1,14 +1,116 @@
 <BaseScreen title="Huey's eink screen">
   <div class="max-w-screen-md mx-auto">
-    <Header>
-      Huey's eInk Screen
-    </Header>
+    <Header />
 
     <Canvas />
+
+    <div class="flex flex-col items-start py-6 px-2">
+      <label class="w-full">
+        <span class="block text-lg font-bold">Image</span>
+        <input class="w-full block my-4 py-2" type="file" id="input_image" accept="image/*" hx-trigger="changed" hx-on:input="updatePreview();" />
+      </label>
+      <label class="w-full">
+        <span class="block text-lg font-bold">Image sizing</span>
+        <select id="image_sizing">
+          <option>Auto</option>
+          <option>Full Width</option>
+          <option>Full Height</option>
+        </select>
+      </label>
+      <label class="w-full">
+        <span class="block text-lg font-bold">Image rotation</span>
+        <input class="w-full" type="image" id="image_rotation" />
+      </label>
+      <label class="w-full">
+        <span class="block text-lg font-bold">Image dithering</span>
+        <input class="w-full" type="image" id="image_dithering" />
+      </label>
+    </div>
 
     <div class="flex flex-row gap-4 mt-8">
       <PrimaryButton hx_put="/current" hx_on_config_request="configRequest(event);">SUBMIT</PrimaryButton>
       <SecondaryButton hx-put="/current" hx_on_config_request="configRequest(event, '');">CLEAR</SecondaryButton>
     </div>
   </div>
+  <script>
+    const canvas = document.getElementById("preview")
+    const ctx = canvas.getContext("2d")
+
+    const updatePreview = () => {
+      const files = document.getElementById("input_image").files
+
+      if (files === null || files.length == 0) {
+        // no selection, ignore
+        return
+      }
+
+      if (files.length > 1) {
+        window.alert(`Using only the first file of the ${files.length} files selected`)
+      }
+
+      const image = URL.createObjectURL(files[0])
+
+      const imageRotation = document.getElementById("image_rotation").value
+      const imageSizing = document.getElementById("image_rotation").value
+
+      ctx.fillStyle = "white"
+      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
+      ctx.save()
+
+      ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2)
+      const rotation = Number.parseInt(imageRotation, 10)
+      ctx.rotate(rotation * Math.PI / 180)
+
+      let ratio = Math.min(ctx.canvas.width / image.width, ctx.canvas.height / image.height)
+      switch (imageSizing) {
+        case `fullHeight`: {
+          ratio = ctx.canvas.height / image.height
+          break
+        }
+
+        case 'fullWidth': {
+          ratio = ctx.canvas.width / image.width
+          break
+        }
+
+        default: {
+          break
+        }
+      }
+      const offsetX = Math.round((ctx.canvas.width - image.width * ratio) / 2) - ctx.canvas.width / 2
+      const offsetY = Math.round((ctx.canvas.height - image.height * ratio) / 2) - ctx.canvas.height / 2
+
+      ctx.drawImage(
+        image,
+        0,
+        0,
+        image.width,
+        image.height,
+        offsetX,
+        offsetY,
+        image.width * ratio,
+        image.height * ratio
+      )
+      ctx.restore()
+
+
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      updatePreview()
+    })
+
+    const configRequest = async (event, data) => {
+      if (typeof data === 'undefined') {
+        // use current imageData by default
+        const rawImageData = ctx.getImageData(0, 0, WIDTH, HEIGHT)
+        const ditheredImageData = await ditherImageData(rawImageData, currentStore.dithering)
+        event.detail.parameters['image_data'] = imageData
+      } else {
+        // if empty string specified
+        event.detail.parameters['image_data'] = ''
+      }
+    }
+
+  </script>
 </BaseScreen>
