@@ -4,10 +4,21 @@
 
     <Canvas />
 
-    <div class="flex flex-col items-start py-6 px-2">
+    <div class="flex flex-col items-start py-6 gap-4">
       <label class="w-full">
         <span class="block text-lg font-bold">Image</span>
-        <input class="w-full block my-4 py-2" type="file" id="input_image" accept="image/*" hx-trigger="changed" hx-on:input="updatePreview();" />
+        <input class="
+            w-full block
+            py-2
+            file:mr-4 
+            file:py-2 
+            file:px-4 
+            file:border-0 
+            file:font-semibold 
+            file:bg-indigo-50 
+            file:text-indigo-700 
+            hover:file:bg-indigo-100 
+            cursor-pointer" type="file" id="input_image" accept="image/*" hx-trigger="changed" hx-on:input="updatePreview();" />
       </label>
       <label class="w-full">
         <span class="block text-lg font-bold">Image sizing</span>
@@ -27,16 +38,30 @@
       </label>
     </div>
 
-    <div class="flex flex-row gap-4 mt-8">
-      <PrimaryButton hx_put="/current" hx_on_config_request="configRequest(event);">SUBMIT</PrimaryButton>
-      <SecondaryButton hx-put="/current" hx_on_config_request="configRequest(event, '');">CLEAR</SecondaryButton>
+    <div class="flex flex-row gap-4 mb-8">
+      <PrimaryButton hx_put="/current" hx_on_config_request="configRequest(event);">
+        <span class="htmx-indicator-default">
+          SUBMIT
+        </span>
+        <span class="htmx-indicator">
+          LOADING...
+        </span>
+      </PrimaryButton>
+      <SecondaryButton hx-put="/current" hx_on_config_request="configRequest(event, '');">
+        <span class="htmx-indicator-default">
+          CLEAR
+        </span>
+        <span class="htmx-indicator">
+          CLEARING...
+        </span>
+      </SecondaryButton>
     </div>
   </div>
   <script>
     const canvas = document.getElementById("preview")
     const ctx = canvas.getContext("2d")
 
-    const updatePreview = () => {
+    const updatePreview = async () => {
       const files = document.getElementById("input_image").files
 
       if (files === null || files.length == 0) {
@@ -48,52 +73,58 @@
         window.alert(`Using only the first file of the ${files.length} files selected`)
       }
 
-      const image = URL.createObjectURL(files[0])
+      const image = new Image()
+      image.src = URL.createObjectURL(files[0])
 
-      const imageRotation = document.getElementById("image_rotation").value
-      const imageSizing = document.getElementById("image_rotation").value
+      image.onload = async () => {
 
-      ctx.fillStyle = "white"
-      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
-      ctx.save()
+        const imageRotation = 0 // document.getElementById("image_rotation").value
+        const imageSizing = 'auto' // document.getElementById("image_rotation").value
+        const dithering = 'floydSteinbergRed' // TODO
 
-      ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2)
-      const rotation = Number.parseInt(imageRotation, 10)
-      ctx.rotate(rotation * Math.PI / 180)
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+        ctx.save()
 
-      let ratio = Math.min(ctx.canvas.width / image.width, ctx.canvas.height / image.height)
-      switch (imageSizing) {
-        case `fullHeight`: {
-          ratio = ctx.canvas.height / image.height
-          break
+        ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2)
+        const rotation = Number.parseInt(imageRotation, 10)
+        ctx.rotate(rotation * Math.PI / 180)
+
+        let ratio = Math.min(ctx.canvas.width / image.width, ctx.canvas.height / image.height)
+        switch (imageSizing) {
+          case `fullHeight`: {
+            ratio = ctx.canvas.height / image.height
+            break
+          }
+
+          case 'fullWidth': {
+            ratio = ctx.canvas.width / image.width
+            break
+          }
+
+          default: {
+            break
+          }
         }
+        const offsetX = Math.round((ctx.canvas.width - image.width * ratio) / 2) - ctx.canvas.width / 2
+        const offsetY = Math.round((ctx.canvas.height - image.height * ratio) / 2) - ctx.canvas.height / 2
 
-        case 'fullWidth': {
-          ratio = ctx.canvas.width / image.width
-          break
-        }
+        ctx.drawImage(
+          image,
+          0,
+          0,
+          image.width,
+          image.height,
+          offsetX,
+          offsetY,
+          image.width * ratio,
+          image.height * ratio
+        )
+        ctx.restore()
 
-        default: {
-          break
-        }
+        const rawImageData = ctx.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
+        const ditheredImageData = await ditherImageData(rawImageData, dithering)
+        ctx.putImageData(ditheredImageData, 0, 0)
       }
-      const offsetX = Math.round((ctx.canvas.width - image.width * ratio) / 2) - ctx.canvas.width / 2
-      const offsetY = Math.round((ctx.canvas.height - image.height * ratio) / 2) - ctx.canvas.height / 2
-
-      ctx.drawImage(
-        image,
-        0,
-        0,
-        image.width,
-        image.height,
-        offsetX,
-        offsetY,
-        image.width * ratio,
-        image.height * ratio
-      )
-      ctx.restore()
-
-
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -103,11 +134,12 @@
     const configRequest = async (event, data) => {
       if (typeof data === 'undefined') {
         // use current imageData by default
-        const rawImageData = ctx.getImageData(0, 0, WIDTH, HEIGHT)
-        const ditheredImageData = await ditherImageData(rawImageData, currentStore.dithering)
+        const rawImageData = ctx.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT).data
+        const imageData = convertImageDataToMonoRedHLSB(rawImageData, CANVAS_WIDTH, CANVAS_HEIGHT)
         event.detail.parameters['image_data'] = imageData
       } else {
         // if empty string specified
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
         event.detail.parameters['image_data'] = ''
       }
     }

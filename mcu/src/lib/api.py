@@ -45,7 +45,6 @@ def fetch_screen(etag=None):
     try:
         # Hostname to IP adddress
         socket_address = usocket.getaddrinfo(HOSTNAME, 443)[0][-1]
-        # socket_address = usocket.getaddrinfo(HOSTNAME, 80)[0][-1]
 
         s = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
         s.connect(socket_address)
@@ -58,7 +57,6 @@ def fetch_screen(etag=None):
         print(request)
 
         ssl_socket.write(request.encode())
-        # s.send(request.encode())
 
         headers_complete: bool = False
 
@@ -66,14 +64,10 @@ def fetch_screen(etag=None):
         half_content_length: int = 0
         new_etag = None
         status_code = None
-
         d = Display()
-        d.init_epd()
-        d.epd.begin_black_data_transmission()
 
         while True:
             chunk = ssl_socket.read(CHUNK_SIZE)
-            # chunk = s.recv(CHUNK_SIZE)
 
             if not chunk:
                 print("No more chunks")
@@ -95,7 +89,6 @@ def fetch_screen(etag=None):
                     if status_code == 304:  # Not Modified
                         print("HTTP 304 Not Modified")
                         break
-
                     if status_code != 200:
                         print("Non-200 status code: ", status_code)
                         print(chunk)
@@ -103,10 +96,14 @@ def fetch_screen(etag=None):
 
                     content_length = int(headers.get("Content-Length"))
 
+                    d.init_epd()
+
                     if not (content_length > 0):
                         print("Clearing screen")
                         d.clear()
                         break
+
+                    d.epd.begin_black_data_transmission()
 
                     half_content_length = content_length // 2
                 else:
@@ -114,18 +111,35 @@ def fetch_screen(etag=None):
                     print(chunk)
 
             try:
+                # chunk may contain some red data and some black data
+                chunk_before_red: bool = (
+                    content_length > half_content_length
+                    and (content_length - len(chunk)) <= half_content_length
+                )
+
+                if chunk_before_red:
+                    black_data_length = content_length - half_content_length
+                    d.epd.send_data(chunk[:black_data_length])
+                    content_length -= black_data_length
+
                 if content_length == half_content_length:
+                    print("Begin red data transmission")
                     d.epd.send_data(0x92)
                     d.epd.begin_red_data_transmission()
 
-                content_length -= len(chunk)
-                d.epd.send_data(chunk)
+                print("Current content_length: ", content_length)
+                if chunk_before_red:
+                    # just send the remainder
+                    d.epd.send_data(chunk[:black_data_length])
+                    content_length -= len(chunk) - black_data_length
+                else:
+                    d.epd.send_data(chunk)
+                    content_length -= len(chunk)
 
             except Exception as e:
                 print("Error decoding chunk:", e)
 
         ssl_socket.close()
-        # s.close()
 
         if status_code == 200 and new_etag is not None:
             etag = new_etag

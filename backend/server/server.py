@@ -6,6 +6,9 @@ from jinjax import Catalog
 
 app = Flask(__name__, static_folder=None)
 
+app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024  # 8 MB limit
+app.config["MAX_FORM_MEMORY_SIZE"] = 8 * 1024 * 1024  # 8 MB limit
+
 assets = Environment(app)
 assets.init_app(app)
 

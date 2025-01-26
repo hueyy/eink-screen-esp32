@@ -28,12 +28,17 @@
   processes = {
     flask.exec = "cp-htmx && dev-flask";
     tailwind.exec = "dev-tailwind";
+    tailwind.process-compose = {
+      availability = {
+        restart = "always";
+      };
+    };
   };
 
   scripts.dev-flask.exec = "flask --debug --app server/server run";
 
-  scripts.dev-tailwind.exec = "pnpm exec tailwindcss --watch -i ./server/styles/main.css -o ./server/static/styles/main.css";
-  scripts.build-tailwind.exec = "pnpm exec tailwindcss -i ./server/styles/main.css -o ./server/static/styles/main.css --minify";
+  scripts.dev-tailwind.exec = "pnpm dlx @tailwindcss/cli -i ./server/styles/main.css -o ./server/static/styles/main.css --watch";
+  scripts.build-tailwind.exec = "pnpm dlx @tailwindcss/cli -i ./server/styles/main.css -o ./server/static/styles/main.css --minify";
 
   scripts.cp-htmx.exec = "cp -f node_modules/htmx.org/dist/htmx.min.js server/static/scripts/htmx.min.js";
 

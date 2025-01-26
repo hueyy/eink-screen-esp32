@@ -17,17 +17,36 @@
           hx-trigger="debounce:500ms changed" hx-on:input="updatePreview();" />
       </label>
     </div>
+
+    <div class="flex flex-row gap-4 mb-8">
+      <PrimaryButton hx_put="/current" hx_on_config_request="configRequest(event);">
+        <span class="htmx-indicator-default">
+          SUBMIT
+        </span>
+        <span class="htmx-indicator">
+          LOADING...
+        </span>
+      </PrimaryButton>
+      <SecondaryButton hx-put="/current" hx_on_config_request="configRequest(event, '');">
+        <span class="htmx-indicator-default">
+          CLEAR
+        </span>
+        <span class="htmx-indicator">
+          CLEARING...
+        </span>
+      </SecondaryButton>
+    </div>
   </div>
 
   <script>
     const canvas = document.getElementById("preview")
-    const ctx = canvas.getConterxt("2d")
+    const ctx = canvas.getContext("2d")
 
     const updatePreview = () => {
       const text = document.getElementById("input_text").value
       const font = document.getElementById("input_font").value || "sans-serif"
 
-      ctx.fillStyle = "white"
+      ctx.fillStyle = 'white'
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
 
       ctx.fillStyle = "black"
@@ -47,6 +66,7 @@
         event.detail.parameters['image_data'] = imageData
       } else {
         // if empty string specified
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
         event.detail.parameters['image_data'] = ''
       }
     }
