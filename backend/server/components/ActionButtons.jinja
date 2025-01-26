@@ -1,0 +1,21 @@
+<form class="gap-4">
+  <PrimaryButton class_name="mr-4" hx_put="/current" hx_on_config_request="configRequest(event);">
+    <span class="htmx-indicator-default">
+      SUBMIT
+    </span>
+    <span class="htmx-indicator">
+      LOADING...
+    </span>
+  </PrimaryButton>
+  <SecondaryButton hx-put="/current" hx_on_config_request="configRequest(event, '');">
+    <span class="htmx-indicator-default">
+      CLEAR
+    </span>
+    <span class="htmx-indicator">
+      CLEARING...
+    </span>
+  </SecondaryButton>
+  <div class="mt-6 text-red-600 htmx-error-message">
+    <strong>Error</strong>: Failed to transmit image data
+  </div>
+</form>

@@ -19,3 +19,11 @@
 .htmx-request .htmx-indicator-default {
 	@apply hidden;
 }
+
+.htmx-error-message {
+	@apply hidden;
+}
+
+.htmx-error .htmx-error-message {
+	@apply block;
+}

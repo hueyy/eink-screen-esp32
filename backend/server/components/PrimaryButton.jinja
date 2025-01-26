@@ -1,7 +1,8 @@
-{#def hx_put="", hx_include="", hx_on_config_request #}
+{#def class_name="", hx_put="", hx_include="", hx_on_config_request #}
 
-<button class="bg-indigo-700 text-white py-2 px-4 font-bold cursor-pointer" type="button" {%- if hx_put -%}hx-put="{{ hx_put }}" {%- endif -%}
-  {%- if hx_include -%} hx-include="{{ hx_include }}" {%- endif -%} {%- if hx_on_config_request -%} hx-on:htmx:config-request="{{ hx_on_config_request }}"
-  {%- endif -%} hx-swap="none">
+<button class="bg-indigo-700 text-white py-2 px-4 font-bold cursor-pointer {{class_name}}" type="button" {%- if hx_put -%}hx-put="{{ hx_put }}" {%- endif -%}
+  {%- if hx_include -%} hx-include="{{ hx_include }}" {%- endif -%} {%- if hx_on_config_request -%}
+  hx-on:htmx:config-request="this.closest('form').classList.remove('htmx-error'); {{ hx_on_config_request }}" {%- endif -%}
+  hx-on:htmx:error="this.closest('form').classList.add('htmx-error');" hx-swap="none">
   {{ content }}
 </button>

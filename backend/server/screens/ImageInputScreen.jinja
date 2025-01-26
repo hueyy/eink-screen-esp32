@@ -1,5 +1,5 @@
 <BaseScreen title="Huey's eink screen">
-  <div class="max-w-(--breakpoint-md) mx-auto">
+  <div class="max-w-(--breakpoint-md) mx-auto pb-8">
     <Header />
 
     <Canvas />
@@ -38,24 +38,7 @@
       </label>
     </div>
 
-    <div class="flex flex-row gap-4 mb-8">
-      <PrimaryButton hx_put="/current" hx_on_config_request="configRequest(event);">
-        <span class="htmx-indicator-default">
-          SUBMIT
-        </span>
-        <span class="htmx-indicator">
-          LOADING...
-        </span>
-      </PrimaryButton>
-      <SecondaryButton hx-put="/current" hx_on_config_request="configRequest(event, '');">
-        <span class="htmx-indicator-default">
-          CLEAR
-        </span>
-        <span class="htmx-indicator">
-          CLEARING...
-        </span>
-      </SecondaryButton>
-    </div>
+    <ActionButtons />
   </div>
   <script>
     const canvas = document.getElementById("preview")
