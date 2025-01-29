@@ -26,7 +26,7 @@
 
   const getAverageLuminosity = ([r, g, b]) => (r + g + b) / 3
 
-  const getNearest = (palette, inputColour) => {
+  const getNearestColourIndex = (palette, inputColour) => {
     const distances = palette.map((p) => getColourDistance(p, inputColour))
     const lowest = Math.min(...distances)
     const index = distances.findIndex((d) => lowest === d)
@@ -209,7 +209,7 @@
           currentPixel < data.length;
           currentPixel += 4
         ) {
-          const nearestColourIndex = getNearest(colourPalette, [
+          const nearestColourIndex = getNearestColourIndex(colourPalette, [
             data[currentPixel],
             data[currentPixel + 1],
             data[currentPixel + 2],

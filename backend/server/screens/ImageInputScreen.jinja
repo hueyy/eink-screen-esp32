@@ -141,6 +141,7 @@
         event.detail.parameters['image_data'] = imageData
       } else {
         // if empty string specified
+        document.getElementById("input_image").value = null
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
         event.detail.parameters['image_data'] = ''
       }

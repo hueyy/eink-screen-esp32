@@ -64,6 +64,8 @@ def fetch_screen(etag=None):
         half_content_length: int = 0
         new_etag = None
         status_code = None
+        clear_screen: bool = False
+
         d = Display()
 
         while True:
@@ -100,6 +102,7 @@ def fetch_screen(etag=None):
 
                     if not (content_length > 0):
                         print("Clearing screen")
+                        clear_screen = True
                         d.clear()
                         break
 
@@ -112,12 +115,12 @@ def fetch_screen(etag=None):
 
             try:
                 # chunk may contain some red data and some black data
-                chunk_before_red: bool = (
+                chunk_with_some_red: bool = (
                     content_length > half_content_length
                     and (content_length - len(chunk)) <= half_content_length
                 )
 
-                if chunk_before_red:
+                if chunk_with_some_red:
                     black_data_length = content_length - half_content_length
                     d.epd.send_data(chunk[:black_data_length])
                     content_length -= black_data_length
@@ -128,9 +131,9 @@ def fetch_screen(etag=None):
                     d.epd.begin_red_data_transmission()
 
                 print("Current content_length: ", content_length)
-                if chunk_before_red:
+                if chunk_with_some_red:
                     # just send the remainder
-                    d.epd.send_data(chunk[:black_data_length])
+                    d.epd.send_data(chunk[black_data_length:])
                     content_length -= len(chunk) - black_data_length
                 else:
                     d.epd.send_data(chunk)
@@ -145,8 +148,9 @@ def fetch_screen(etag=None):
             etag = new_etag
             print("Set Etag to: ", etag)
 
-            print("Updating screen")
-            d.epd.turn_on_display()
+            if not clear_screen:
+                print("Updating screen")
+                d.epd.turn_on_display()
 
     except Exception as e:
         raise e
