@@ -125,8 +125,9 @@
     return result
   }
 
-  const ditherImageData = async (imageData, ditherMode) => {
+  const ditherImageData = (imageData, ditherMode) => {
     const { data, width } = imageData
+
     switch (ditherMode) {
       // TODO: Bill Atkinson dithering and Riemersma dithering?
       case "none": {
@@ -143,9 +144,9 @@
               data[currentPixel + 1] +
               data[currentPixel + 2]) /
             3
-          data[currentPixel] = averageLuminosity < DITHER_THRESHOLD ? 0 : 255
-          data[currentPixel + 1] = data[currentPixel]
-          data[currentPixel + 2] = data[currentPixel]
+          imageData.data[currentPixel] = averageLuminosity < DITHER_THRESHOLD ? 0 : 255
+          imageData.data[currentPixel + 1] = imageData.data[currentPixel]
+          imageData.data[currentPixel + 2] = imageData.data[currentPixel]
         }
         return imageData
       }

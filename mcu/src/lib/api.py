@@ -2,7 +2,7 @@ import usocket, ssl
 from micropython import const
 from lib.display import Display
 
-HOSTNAME = const("c15c-156-249-13-28.ngrok-free.app")
+HOSTNAME = const("moving-blessed-wombat.ngrok-free.app")
 
 CHUNK_SIZE = const(1000)  # 1KiB
 

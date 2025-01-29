@@ -13,8 +13,7 @@
             file:mr-4 
             file:py-2 
             file:px-4 
-            file:border-0 
-            file:font-semibold 
+            file:border-0
             file:bg-indigo-50 
             file:text-indigo-700 
             hover:file:bg-indigo-100 
@@ -22,19 +21,33 @@
       </label>
       <label class="w-full">
         <span class="block text-lg font-bold">Image sizing</span>
-        <select id="image_sizing">
-          <option>Auto</option>
-          <option>Full Width</option>
-          <option>Full Height</option>
+        <select class="bg-indigo-50 text-indigo-700 px-4 py-2 mt-2 hover:bg-indigo-100 cursor-pointer" id="image_sizing" hx-trigger="changed"
+          hx-on:change="updatePreview();">
+          <option value="auto">Auto</option>
+          <option value="full_width">Full Width</option>
+          <option value="full_height">Full Height</option>
         </select>
       </label>
       <label class="w-full">
         <span class="block text-lg font-bold">Image rotation</span>
-        <input class="w-full" type="image" id="image_rotation" />
+        <select class="bg-indigo-50 text-indigo-700 px-4 py-2 mt-2 hover:bg-indigo-100 cursor-pointer" id="image_rotation" hx-trigger="changed"
+          hx-on:change="updatePreview();">
+          <option value="0">0°</option>
+          <option value="90">90° Clockwise</option>
+          <option value="180">180°</option>
+          <option value="270">270° Clockwise</option>
+        </select>
       </label>
       <label class="w-full">
         <span class="block text-lg font-bold">Image dithering</span>
-        <input class="w-full" type="image" id="image_dithering" />
+        <select class="bg-indigo-50 text-indigo-700 px-4 py-2 mt-2 hover:bg-indigo-100 cursor-pointer" id="image_dithering" hx-trigger="changed"
+          hx-on:change="updatePreview();">
+          <option value="none">None</option>
+          <option value="binary">Binary</option>
+          <option value="ternary">Ternary</option>
+          <option value="floydSteinberg">Floyd-Steinberg (B&W only)</option>
+          <option value="floydSteinbergRed" selected>Floyd-Steinberg (B&W and red)</option>
+        </select>
       </label>
     </div>
 
@@ -59,12 +72,12 @@
       const image = new Image()
       image.src = URL.createObjectURL(files[0])
 
+      const imageRotation = document.getElementById("image_rotation").value
+      const imageSizing = document.getElementById("image_sizing").value
+      const dithering = document.getElementById("image_dithering").value
+
+
       image.onload = async () => {
-
-        const imageRotation = 0 // document.getElementById("image_rotation").value
-        const imageSizing = 'auto' // document.getElementById("image_rotation").value
-        const dithering = 'floydSteinbergRed' // TODO
-
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
         ctx.save()
 
@@ -72,15 +85,20 @@
         const rotation = Number.parseInt(imageRotation, 10)
         ctx.rotate(rotation * Math.PI / 180)
 
-        let ratio = Math.min(ctx.canvas.width / image.width, ctx.canvas.height / image.height)
+        const widthHeightSwapped = rotation === 90 || rotation === 270
+        const rotatedWidth = widthHeightSwapped ? image.height : image.width
+        const rotatedHeight = widthHeightSwapped ? image.width : image.height
+
+        let ratio = Math.min(ctx.canvas.width / rotatedWidth, ctx.canvas.height / rotatedHeight)
+
         switch (imageSizing) {
-          case `fullHeight`: {
-            ratio = ctx.canvas.height / image.height
+          case `full_height`: {
+            ratio = ctx.canvas.height / rotatedHeight
             break
           }
 
-          case 'fullWidth': {
-            ratio = ctx.canvas.width / image.width
+          case 'full_width': {
+            ratio = ctx.canvas.width / rotatedWidth
             break
           }
 
@@ -88,6 +106,7 @@
             break
           }
         }
+
         const offsetX = Math.round((ctx.canvas.width - image.width * ratio) / 2) - ctx.canvas.width / 2
         const offsetY = Math.round((ctx.canvas.height - image.height * ratio) / 2) - ctx.canvas.height / 2
 
@@ -105,7 +124,7 @@
         ctx.restore()
 
         const rawImageData = ctx.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
-        const ditheredImageData = await ditherImageData(rawImageData, dithering)
+        const ditheredImageData = ditherImageData(rawImageData, dithering)
         ctx.putImageData(ditheredImageData, 0, 0)
       }
     }
