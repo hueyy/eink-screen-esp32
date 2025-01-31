@@ -4,26 +4,17 @@
 
     <Canvas />
 
-    <div class="flex flex-col items-start py-6 px-2">
+    <div class="flex flex-col items-start py-6">
       <label class="w-full">
-        <span class="block text-lg font-bold">Text</span>
-        <textarea class="w-full block my-4 px-4 py-2 border border-neutral-500 resize-y" type="text" placeholder="Enter string..." id="input_text"
-          hx-trigger="debounce:500ms changed" hx-on:input="updatePreview();"></textarea>
-      </label>
-
-      <label class="w-full">
-        <span class="block text-lg font-bold">Font Family</span>
-        <input class="w-full block my-4 px-4 py-2 border border-neutral-500 resize-y" type="text" placeholder="sans-serif" id="input_font"
-          hx-trigger="debounce:500ms changed" hx-on:input="updatePreview();" />
+        <span class="block text-lg font-bold">Source</span>
+        <select class="bg-indigo-50 text-indigo-700 px-4 py-2 mt-2 hover:bg-indigo-100 cursor-pointer" id="source" hx-trigger="changed"
+          hx-on:change="updatePreview();">
+          {% for item in headline_options %}
+          <option>{{ item[0] }}</option>
+          {% endfor %}
+        </select>
       </label>
     </div>
-
-    <ActionButtons />
-
-    <p class="mt-6">
-      For more complex text layouts, use the <a href="/image">Image</a> mode with a text or image editor. For example, you can use <a
-        href="https://www.photopea.com/">Photopea</a> or upload a screenshot from your computer.
-    </p>
   </div>
 
   <script>

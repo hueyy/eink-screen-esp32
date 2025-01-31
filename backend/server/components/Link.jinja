@@ -3,11 +3,11 @@
 {% set matches_current_path = current_path() == href %}
 
 {% if matches_current_path %}
-<div class="px-4 py-2 bg-indigo-500 text-white">
+<div class="px-4 py-2 bg-indigo-500 text-white no-underline">
   {{ content }}
 </div>
 {% else %}
-<a class="px-4 py-2 bg-slate-200" href="{{ href }}">
+<a class="px-4 py-2 bg-slate-200 text-black no-underline" href="{{ href }}">
   {{ content }}
 </a>
 {% endif %}

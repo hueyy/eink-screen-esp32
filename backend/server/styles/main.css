@@ -4,26 +4,32 @@
 	--color-eink-screen: rgb(255, 252, 241);
 }
 
-.htmx-indicator {
-	@apply hidden;
-}
+@layer base {
+	a {
+		@apply text-indigo-700 underline;
+	}
 
-.htmx-request .htmx-indicator {
-	@apply block;
-}
+	.htmx-indicator {
+		@apply hidden;
+	}
 
-.htmx-indicator-default {
-	@apply block;
-}
+	.htmx-request .htmx-indicator {
+		@apply block;
+	}
 
-.htmx-request .htmx-indicator-default {
-	@apply hidden;
-}
+	.htmx-indicator-default {
+		@apply block;
+	}
 
-.htmx-error-message {
-	@apply hidden;
-}
+	.htmx-request .htmx-indicator-default {
+		@apply hidden;
+	}
 
-.htmx-error .htmx-error-message {
-	@apply block;
+	.htmx-error-message {
+		@apply hidden;
+	}
+
+	.htmx-error .htmx-error-message {
+		@apply block;
+	}
 }

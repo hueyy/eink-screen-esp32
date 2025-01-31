@@ -4,7 +4,13 @@
   packages = [
     pkgs.git
     pkgs.ngrok
+    pkgs.python312Packages.playwright
+    pkgs.python312Packages.pytest-playwright
+    pkgs.playwright-driver
   ];
+
+  env.PLAYWRIGHT_BROWSERS_PATH = pkgs.playwright-driver.browsers;
+  env.PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = true;
 
   languages = {
     javascript = {
@@ -35,7 +41,8 @@
     };
   };
 
-  scripts.dev-flask.exec = "flask --debug --app server/server run";
+  scripts.dev-flask.exec = "DEBUG=True python -m server.server";
+  scripts.prod-flask.exec = "gunicorn -w 1 -b localhost:5000 server.server:app --access-logfile -";
 
   scripts.dev-tailwind.exec = "pnpm dlx @tailwindcss/cli -i ./server/styles/main.css -o ./server/static/styles/main.css --watch";
   scripts.build-tailwind.exec = "pnpm dlx @tailwindcss/cli -i ./server/styles/main.css -o ./server/static/styles/main.css --minify";
@@ -47,6 +54,10 @@
     config = ''
       {
         debug
+
+        log default {
+          format console
+        }
       }
 
       :8000 {
