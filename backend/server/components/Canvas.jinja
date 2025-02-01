@@ -12,6 +12,9 @@
     [255, 0, 0],
   ]
 
+  const canvas = document.getElementById("preview")
+  const ctx = canvas.getContext("2d")
+
   const determineBit = (red, green, blue, alpha) => {
     // true is white
     // false is black

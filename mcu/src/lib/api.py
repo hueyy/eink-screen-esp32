@@ -1,5 +1,5 @@
-import usocket, ssl
-from micropython import const
+import usocket, ssl  # type: ignore
+from micropython import const  # type: ignore
 from lib.display import Display
 
 HOSTNAME = const("moving-blessed-wombat.ngrok-free.app")
@@ -26,7 +26,7 @@ def parse_headers(header_string: str):
     return headers
 
 
-def compose_request(etag: str):
+def compose_request(etag: str | None):
     headers = [
         "GET /static/current HTTP/1.1",
         f"Host: {HOSTNAME}",
@@ -41,7 +41,7 @@ def compose_request(etag: str):
     return "\r\n".join(headers)
 
 
-def fetch_screen(etag=None):
+def fetch_screen(etag: str | None = None):
     try:
         # Hostname to IP adddress
         socket_address = usocket.getaddrinfo(HOSTNAME, 443)[0][-1]
@@ -50,7 +50,7 @@ def fetch_screen(etag=None):
         s.connect(socket_address)
         s.settimeout(60)
 
-        ssl_socket = ssl.wrap_socket(s)
+        ssl_socket = ssl.wrap_socket(s)  # type: ignore
 
         request = compose_request(etag)
         print("Making request: ")

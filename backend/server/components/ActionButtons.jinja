@@ -1,5 +1,5 @@
 <form class="gap-4">
-  <PrimaryButton class_name="mr-4" hx_put="/current" hx_on_config_request="configRequest(event);">
+  <PrimaryButton class_name="mr-4" hx_put="/current" hx_include="#image_data">
     <span class="htmx-indicator-default">
       SUBMIT
     </span>
@@ -7,7 +7,7 @@
       LOADING...
     </span>
   </PrimaryButton>
-  <SecondaryButton hx-put="/current" hx_on_config_request="configRequest(event, '');">
+  <SecondaryButton hx-post="/clear" hx_on_config_request="configRequest(event);">
     <span class="htmx-indicator-default">
       CLEAR
     </span>
@@ -15,6 +15,7 @@
       CLEARING...
     </span>
   </SecondaryButton>
+  <input type="file" id="image_data" name="image_data" class="hidden" />
   <div class="mt-6 text-red-600 htmx-error-message">
     <strong>Error</strong>: Failed to transmit image data
   </div>

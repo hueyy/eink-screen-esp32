@@ -54,9 +54,6 @@
     <ActionButtons />
   </div>
   <script>
-    const canvas = document.getElementById("preview")
-    const ctx = canvas.getContext("2d")
-
     const updatePreview = async () => {
       const files = document.getElementById("input_image").files
 
@@ -126,6 +123,15 @@
         const rawImageData = ctx.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
         const ditheredImageData = ditherImageData(rawImageData, dithering)
         ctx.putImageData(ditheredImageData, 0, 0)
+
+        canvas.toBlob(blob => {
+          const dataTransfer = new DataTransfer()
+          const file = new File([blob], 'image.png', { type: blob.type })
+          dataTransfer.items.add(file)
+
+          const fileInput = document.getElementById("image_data")
+          fileInput.files = dataTransfer.files
+        }, "image/png")
       }
     }
 
@@ -134,17 +140,8 @@
     })
 
     const configRequest = async (event, data) => {
-      if (typeof data === 'undefined') {
-        // use current imageData by default
-        const rawImageData = ctx.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT).data
-        const imageData = convertImageDataToMonoRedHLSB(rawImageData, CANVAS_WIDTH, CANVAS_HEIGHT)
-        event.detail.parameters['image_data'] = imageData
-      } else {
-        // if empty string specified
-        document.getElementById("input_image").value = null
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-        event.detail.parameters['image_data'] = ''
-      }
+      document.getElementById("input_image").value = null
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     }
 
   </script>

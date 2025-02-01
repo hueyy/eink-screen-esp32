@@ -3,6 +3,7 @@ __pycache__
 /server/static/styles/main.css
 /server/static/scripts/htmx.min.js
 /server/static/current
+/server/static/current.png
 
 # Devenv
 .devenv*

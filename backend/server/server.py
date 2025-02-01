@@ -6,7 +6,7 @@ from flask_apscheduler import APScheduler  # type: ignore
 import os
 from typing import Final, Literal
 from datetime import datetime
-from server.render import render_dashboard_as_rgb  # type: ignore
+from server.render import render_dashboard_as_rgb, image_buffer_to_bytes  # type: ignore
 from server.eink import dither_image_data, convert_image_data_to_mono_red_hlsb  # type: ignore
 
 app = Flask(__name__, static_folder=None)
@@ -32,6 +32,7 @@ HEADLINE_OPTIONS: Final[list[tuple[str, str]]] = [
 ]
 
 CURRENT_FILE_PATH = "server/static/current"
+CURRENT_FILE_IMAGE_PATH = "server/static/current.png"
 
 DEFAULT_MODE: str = "image"
 
@@ -78,21 +79,40 @@ def dashboard():
     return catalog.render("DashboardModeScreen")
 
 
-def write_current_canvas(value: bytes | str):
+def write_to_file(file_path: str, value: bytes | str):
     open_mode = "w" if type(value) is str else "wb"
-    with open(CURRENT_FILE_PATH, open_mode) as file:
+    with open(file_path, open_mode) as file:
         file.write(value)
+
+
+def write_current_canvas(value: bytes | str):
+    return write_to_file(CURRENT_FILE_PATH, value)
+
+
+def write_current_canvas_image(value: bytes):
+    return write_to_file(CURRENT_FILE_IMAGE_PATH, value)
 
 
 @app.route("/current", methods=["HEAD", "PUT"])
 def put_current():
-    if not "image_data" in request.form:
+    if not "image_data" in request.files:
         return {"message": "image_data field missing"}, 400
-    write_current_canvas(
-        bytes(int(n) for n in request.form["image_data"].split(","))
-        if len(request.form["image_data"]) > 0
-        else ""
+
+    image_data = request.files["image_data"].read()
+
+    write_current_canvas_image(image_data)
+    mono_red_hlsb = convert_image_data_to_mono_red_hlsb(
+        image_buffer_to_bytes(image_data)
     )
+    write_current_canvas(mono_red_hlsb)
+
+    return "OK"
+
+
+@app.route("/clear", methods=["HEAD", "POST"])
+def clear_current():
+    write_current_canvas("")
+    write_current_canvas_image(bytes())
     return "OK"
 
 
