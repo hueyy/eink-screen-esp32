@@ -1,4 +1,4 @@
-{# def current_time, current_date, current_day_of_week, current_year #}
+{# def time_dict, bus_data #}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,12 +15,29 @@
       <main class="w-[800px] h-[480px] border flex">
         <div class="flex flex-col justify-center items-center p-8 w-[50%]">
 
-          <div class="text-9xl font-light">{{current_day_of_week}}</div>
-          <div class="text-7xl font-black my-4">{{current_time}}</div>
-          <div class="text-4xl">{{current_date}}, {{ current_year }}</div>
+          <div class="text-9xl font-light">{{time_dict['current_day_of_week']}}</div>
+          <div class="text-7xl font-black my-4">{{time_dict['current_time']}}</div>
+          <div class="text-4xl">{{time_dict['current_date']}}, {{ time_dict['current_year'] }}</div>
         </div>
-        <div class="w-[50%]">
-          Lorem ipsum
+        <div class="flex flex-col justify-center items-center p-8 w-[50%]">
+          <div class="w-full flex gap-4 justify-between items-center text-center">
+            <div>
+              <p>{{ bus_data['bus_number'] }}</p>
+              <BusIcon class_name="w-10" />
+            </div>
+            <div>
+              <div class="text-4xl font-bold">
+                {{ bus_data['bus_stop_2'][0] ~ " MIN" if bus_data['bus_stop_2'][0] > 0 else "ARR" }}{{ "*" if bus_data['bus_stop_2'][1] == "Estimated" else ""}}
+              </div>
+              <div class="text-xl">TO BISHAN</div>
+            </div>
+            <div>
+              <div class="text-4xl font-bold">
+                {{ bus_data['bus_stop_1'][0] ~ " MIN" if bus_data['bus_stop_1'][0] > 0 else "ARR" }}{{ "*" if bus_data['bus_stop_1'][1] == "Estimated" else ""}}
+              </div>
+              <div class="text-xl">FROM BISHAN</div>
+            </div>
+          </div>
         </div>
     </div>
     </main>

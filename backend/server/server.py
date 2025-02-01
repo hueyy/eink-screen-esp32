@@ -9,6 +9,7 @@ from datetime import datetime
 from server.render import render_dashboard, image_buffer_to_bytes  # type: ignore
 from server.eink import dither_image_data, convert_image_data_to_mono_red_hlsb  # type: ignore
 from server.utils import write_current_canvas, write_current_canvas_image
+from server.bus import get_bus_data
 
 app = Flask(__name__, static_folder=None)
 
@@ -106,17 +107,14 @@ def clear_current():
 @app.route("/current_dashboard", methods=["GET"])
 def get_current_dashboard():
     now = datetime.now()
-    current_date = now.strftime("%u %B")
-    current_day_of_week = now.strftime("%a")
-    current_year = now.strftime("%Y")
-    current_time = now.strftime("%I:%M %p")
-    return catalog.render(
-        "DashboardScreen",
-        current_date=current_date,
-        current_time=current_time,
-        current_day_of_week=current_day_of_week,
-        current_year=current_year,
+    time_dict = dict(
+        current_date=now.strftime("%u %B"),
+        current_day_of_week=now.strftime("%a"),
+        current_year=now.strftime("%Y"),
+        current_time=now.strftime("%I:%M %p"),
     )
+    bus_data = get_bus_data()
+    return catalog.render("DashboardScreen", time_dict=time_dict, bus_data=bus_data)
 
 
 # scheduled tasks

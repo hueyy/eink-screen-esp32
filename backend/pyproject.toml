@@ -16,10 +16,12 @@ apscheduler = "^3.11.0"
 flask-apscheduler = "^1.13.1"
 gunicorn = "^23.0.0"
 pillow = "^11.1.0"
+requests = "^2.32.3"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"
 mypy = "^1.14.1"
+types-requests = "^2.32.0.20241016"
 
 [build-system]
 requires = ["poetry-core"]

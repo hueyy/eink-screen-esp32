@@ -12,6 +12,8 @@
   env.PLAYWRIGHT_BROWSERS_PATH = pkgs.playwright-driver.browsers;
   env.PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = true;
 
+  dotenv.enable = true;
+
   languages = {
     javascript = {
       enable = true;
