@@ -4,6 +4,7 @@ __pycache__
 /server/static/scripts/htmx.min.js
 /server/static/current
 /server/static/current.png
+db.json
 
 # Devenv
 .devenv*

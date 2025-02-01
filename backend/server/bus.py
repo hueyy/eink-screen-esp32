@@ -3,6 +3,10 @@ from datetime import datetime
 from typing import Literal, Final
 import os
 
+LTA_API_URL: Final[str] = (
+    "https://datamall2.mytransport.sg/ltaodataservice/v3/BusArrival"
+)
+
 ETASource = Literal[
     # whether based on bus schedule or bus location
     "Estimated",
@@ -20,15 +24,15 @@ def get_relative_arrival_timing(timestamp: str) -> int:
 def get_bus_arrival_timings(
     bus_stop_code: str, service_number: str
 ) -> tuple[int, ETASource] | tuple[None, None]:
-    url = "https://datamall2.mytransport.sg/ltaodataservice/v3/BusArrival"
     params = {"BusStopCode": bus_stop_code, "ServiceNo": service_number}
     headers = {"AccountKey": os.environ.get("LTA_API_KEY")}
 
     try:
-        response = requests.get(url, params=params, headers=headers)
+        response = requests.get(LTA_API_URL, params=params, headers=headers)
         response.raise_for_status()
 
         data = response.json()
+        print(data)
 
         if data["Services"] and len(data["Services"]) > 0:
             next_bus = data["Services"][0]["NextBus"]

@@ -129,6 +129,10 @@
   }
 
   const ditherImageData = (imageData, ditherMode) => {
+    // Buffer should contain a 1-dimensional array of integers from 0-255
+    // in the RGBA format, representing pixels proceeding from left to
+    // right and then downwards
+
     const { data, width } = imageData
 
     switch (ditherMode) {

@@ -107,9 +107,13 @@ def clamp(value: int | float, min_value: int = 0, max_value: int = 255) -> int:
 
 
 def dither_image_data(
-    image_data: bytes, dither_mode: DitherMode = "floydSteinbergRed"
+    raw_image_data: bytes, dither_mode: DitherMode = "floydSteinbergRed"
 ) -> bytes:
-    image_data = bytearray(image_data)
+    # Buffer should contain a 1-dimensional array of integers from 0-255
+    # in the RGBA format, representing pixels proceeding from left to
+    # right and then downwards
+
+    image_data: list[int] = list(raw_image_data)
     match dither_mode:
         # TODO: Bill Atkinson dithering and Riemersma dithering?
         case "none":
@@ -117,11 +121,12 @@ def dither_image_data(
 
         case "binary":
             for current_pixel in range(0, len(image_data), 4):
-                average_luminosity = (
-                    image_data[current_pixel]
-                    + image_data[current_pixel + 1]
-                    + image_data[current_pixel + 2]
-                ) / 3
+                r, g, b = (
+                    image_data[current_pixel],
+                    image_data[current_pixel + 1],
+                    image_data[current_pixel + 2],
+                )
+                average_luminosity = (r + g + b) / 3
                 image_data[current_pixel] = (
                     0 if average_luminosity < DITHER_THRESHOLD else 255
                 )
@@ -131,11 +136,12 @@ def dither_image_data(
 
         case "ternary":
             for current_pixel in range(0, len(image_data), 4):
-                if is_red(
+                r, g, b = (
                     image_data[current_pixel],
                     image_data[current_pixel + 1],
                     image_data[current_pixel + 2],
-                ):
+                )
+                if is_red(r, g, b):
                     image_data[current_pixel] = 255
                     image_data[current_pixel + 1] = image_data[current_pixel + 2] = 0
                 else:
@@ -153,36 +159,66 @@ def dither_image_data(
 
         case "floydSteinberg":
             for current_pixel in range(0, len(image_data), 4):
-                average_luminosity = get_average_luminosity(
-                    (
-                        image_data[current_pixel],
-                        image_data[current_pixel + 1],
-                        image_data[current_pixel + 2],
-                    )
+                pixel_x = (current_pixel // 4) % CANVAS_WIDTH
+                pixel_y = (current_pixel // 4) % CANVAS_HEIGHT
+
+                r, g, b = (
+                    image_data[current_pixel],
+                    image_data[current_pixel + 1],
+                    image_data[current_pixel + 2],
                 )
-                if average_luminosity < 240 and average_luminosity > 20:
-                    new_pixel = (
-                        0 if image_data[current_pixel] < DITHER_THRESHOLD else 255
-                    )
-                    err = int((image_data[current_pixel] - new_pixel) / 16)
-                    image_data[current_pixel] = new_pixel
-                    image_data[current_pixel + 4] += err * 7
-                    image_data[current_pixel + 4 * CANVAS_WIDTH - 4] += err * 3
-                    image_data[current_pixel + 4 * CANVAS_WIDTH] += err * 5
-                    image_data[current_pixel + 4 * CANVAS_WIDTH + 4] += err * 1
-                    image_data[current_pixel + 1] = image_data[current_pixel]
-                    image_data[current_pixel + 2] = image_data[current_pixel]
+
+                average_luminosity = get_average_luminosity((r, g, b))
+                new_pixel = 0 if average_luminosity < DITHER_THRESHOLD else 255
+                err = [
+                    int(math.floor((image_data[current_pixel + i] - new_pixel) / 16))
+                    for i in range(0, 3)
+                ]
+
+                for dx, pixel_offset, fraction in [
+                    (1, 4, 7 / 16),
+                    (-1, 4 * CANVAS_WIDTH - 4, 3 / 16),
+                    (0, 4 * CANVAS_WIDTH, 5 / 16),
+                    (1, 4 * CANVAS_WIDTH + 4, 1 / 16),
+                ]:
+                    new_x = pixel_x + dx
+                    if 0 <= new_x < CANVAS_WIDTH and pixel_y < CANVAS_HEIGHT - 1:
+                        for i in range(3):
+                            neighbor_idx = current_pixel + pixel_offset + i
+                            if neighbor_idx < len(image_data):
+                                image_data[neighbor_idx] = max(
+                                    0,
+                                    min(
+                                        255,
+                                        image_data[neighbor_idx]
+                                        + int(err[i] * fraction),
+                                    ),
+                                )
+
+            for current_pixel in range(0, len(image_data), 4):
+                r, g, b = (
+                    image_data[current_pixel],
+                    image_data[current_pixel + 1],
+                    image_data[current_pixel + 2],
+                )
+                average_luminosity = get_average_luminosity((r, g, b))
+                new_pixel = 0 if average_luminosity < DITHER_THRESHOLD else 255
+                image_data[current_pixel] = new_pixel
+                image_data[current_pixel + 1] = image_data[current_pixel]
+                image_data[current_pixel + 2] = image_data[current_pixel]
+
             return bytes(image_data)
 
         case "floydSteinbergRed":
             for current_pixel in range(0, len(image_data), 4):
+                r, g, b = (
+                    image_data[current_pixel],
+                    image_data[current_pixel + 1],
+                    image_data[current_pixel + 2],
+                )
                 nearest_colour_index = get_nearest_colour_index(
                     COLOUR_PALETTE,
-                    (
-                        image_data[current_pixel],
-                        image_data[current_pixel + 1],
-                        image_data[current_pixel + 2],
-                    ),
+                    (r, g, b),
                 )
                 new_colour = COLOUR_PALETTE[nearest_colour_index]
 
@@ -210,7 +246,15 @@ def dither_image_data(
                     if 0 <= x1 < CANVAS_WIDTH and 0 <= y1 < CANVAS_HEIGHT:
                         index1: int = 4 * (x1 + y1 * CANVAS_WIDTH)
                         for i in range(3):
-                            image_data[index1 + i] = int(quant_error[i] * fraction)
+                            image_data[index1 + i] = max(
+                                0,
+                                min(
+                                    255,
+                                    image_data[index1 + i]
+                                    + int(quant_error[i] * fraction),
+                                ),
+                            )
+
             return bytes(image_data)
 
         case _:

@@ -4,12 +4,14 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from jinjax import Catalog
 from flask_apscheduler import APScheduler  # type: ignore
 import os
-from typing import Final, Literal
+from typing import Final
 from datetime import datetime
-from server.render import render_dashboard, image_buffer_to_bytes  # type: ignore
+from server.render import render_dashboard, image_buffer_to_bytes, bytes_to_image_buffer
 from server.eink import dither_image_data, convert_image_data_to_mono_red_hlsb  # type: ignore
 from server.utils import write_current_canvas, write_current_canvas_image
 from server.bus import get_bus_data
+from server.nea import get_weather_forecast
+from server.db import db_get_mode, db_set_mode
 
 app = Flask(__name__, static_folder=None)
 
@@ -48,8 +50,6 @@ catalog.add_folder("server/components")
 # scheduler
 scheduler = APScheduler()
 
-mode: Literal["input", "dashboard"] = "input"
-
 
 @app.route("/", methods=["GET"])
 def home():
@@ -58,31 +58,20 @@ def home():
 
 @app.route("/text", methods=["GET"])
 def text():
-    mode = "input"
+    db_set_mode("static")
     return catalog.render("TextInputScreen")
 
 
 @app.route("/image", methods=["GET"])
 def image():
-    mode = "input"
+    db_set_mode("static")
     return catalog.render("ImageInputScreen")
-
-
-@app.route("/dashboard", methods=["GET"])
-def dashboard():
-    mode = "dashboard"
-    rendered_dashboard: bytes = render_dashboard()  # type: ignore
-    write_current_canvas_image(rendered_dashboard)
-    write_current_canvas(
-        convert_image_data_to_mono_red_hlsb(
-            dither_image_data(image_buffer_to_bytes(rendered_dashboard), "ternary")
-        )
-    )
-    return catalog.render("DashboardModeScreen")
 
 
 @app.route("/current", methods=["HEAD", "PUT"])
 def put_current():
+    db_set_mode("static")
+
     if not "image_data" in request.files:
         return {"message": "image_data field missing"}, 400
 
@@ -99,6 +88,7 @@ def put_current():
 
 @app.route("/clear", methods=["HEAD", "POST"])
 def clear_current():
+    db_set_mode("static")
     write_current_canvas("")
     write_current_canvas_image(bytes())
     return "OK"
@@ -114,19 +104,39 @@ def get_current_dashboard():
         current_time=now.strftime("%I:%M %p"),
     )
     bus_data = get_bus_data()
-    return catalog.render("DashboardScreen", time_dict=time_dict, bus_data=bus_data)
+    weather_data = get_weather_forecast()
+    return catalog.render(
+        "DashboardScreen",
+        time_dict=time_dict,
+        bus_data=bus_data,
+        weather_data=weather_data,
+    )
+
+
+def re_render_dashboard() -> None:
+    rendered_dashboard: bytes = render_dashboard()
+    dithered_dashboard = dither_image_data(image_buffer_to_bytes(rendered_dashboard))
+
+    write_current_canvas_image(bytes_to_image_buffer(dithered_dashboard))
+
+    write_current_canvas(convert_image_data_to_mono_red_hlsb(dithered_dashboard))
+
+
+@app.route("/dashboard", methods=["GET"])
+def dashboard() -> str:
+    db_set_mode("dynamic")
+    re_render_dashboard()
+    return catalog.render("DashboardModeScreen")
 
 
 # scheduled tasks
-# @scheduler.task("interval", id="check_for_updates", seconds=5)
-# def check_for_updates():
-#     print("Checking for updates: ", mode)
-#     if mode == "dashboard" or True:
-#         rendered_dashboard: bytes = render_dashboard_as_rgb()
-#         write_current_canvas(
-#             convert_image_data_to_mono_red_hlsb(dither_image_data(rendered_dashboard))
-#         )
-#     return "OK"
+@scheduler.task("interval", id="check_for_updates", seconds=120)
+def check_for_updates() -> str:
+    mode = db_get_mode()
+    print("Checking for updates: ", mode)
+    if mode == "dynamic":
+        re_render_dashboard()
+    return "OK"
 
 
 if __name__ == "__main__":

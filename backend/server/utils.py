@@ -10,6 +10,12 @@ def write_to_file(file_path: str, value: bytes | str):
         file.write(value)
 
 
+def read_from_file(file_path: str):
+    open_mode = "w"
+    with open(file_path, open_mode) as file:
+        return file.read()
+
+
 def write_current_canvas(value: bytes | str):
     return write_to_file(CURRENT_FILE_PATH, value)
 

@@ -16,9 +16,18 @@ def render_dashboard() -> bytes:
         return screenshot
 
 
-def image_buffer_to_bytes(image_buffer: bytes):
+def image_buffer_to_bytes(image_buffer: bytes) -> bytes:
     with Image.open(io.BytesIO(image_buffer)) as img:
         # Convert to RGB mode
         img = img.convert("RGBA")
         # Get raw bytes
         return img.tobytes()
+
+
+def bytes_to_image_buffer(
+    raw_bytes: bytes, width: int = 800, height: int = 480
+) -> bytes:
+    img = Image.frombytes("RGBA", (width, height), raw_bytes)
+    buffer = io.BytesIO()
+    img.save(buffer, format="PNG")
+    return buffer.getvalue()

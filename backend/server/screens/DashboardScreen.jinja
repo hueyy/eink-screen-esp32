@@ -1,4 +1,4 @@
-{# def time_dict, bus_data #}
+{# def time_dict, bus_data, weather_data #}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -13,13 +13,13 @@
   <body>
     <div class="w-screen h-screen flex justify-center items-center font-[Fira_Sans]">
       <main class="w-[800px] h-[480px] border flex">
-        <div class="flex flex-col justify-center items-center p-8 w-[50%]">
+        <div class="flex flex-col justify-center items-center p-8 w-[47%]">
 
           <div class="text-9xl font-light">{{time_dict['current_day_of_week']}}</div>
           <div class="text-7xl font-black my-4">{{time_dict['current_time']}}</div>
           <div class="text-4xl">{{time_dict['current_date']}}, {{ time_dict['current_year'] }}</div>
         </div>
-        <div class="flex flex-col justify-center items-center p-8 w-[50%]">
+        <div class="flex flex-col justify-center items-center p-8 w-[53%]">
           <div class="w-full flex gap-4 justify-between items-center text-center">
             <div>
               <p>{{ bus_data['bus_number'] }}</p>
@@ -27,18 +27,37 @@
             </div>
             <div>
               <div class="text-4xl font-bold">
-                {{ bus_data['bus_stop_2'][0] ~ " MIN" if bus_data['bus_stop_2'][0] > 0 else "ARR" }}{{ "*" if bus_data['bus_stop_2'][1] == "Estimated" else ""}}
+                {% set bus_stop_2_timing = bus_data['bus_stop_2'][0]%}
+                {{ (bus_stop_2_timing ~ " MIN" if bus_stop_2_timing else "ARR") if bus_stop_2_timing else "ERR" }}{{ "*" if bus_data['bus_stop_2'][1] == "Estimated" else ""}}
               </div>
               <div class="text-xl">TO BISHAN</div>
             </div>
             <div>
               <div class="text-4xl font-bold">
-                {{ bus_data['bus_stop_1'][0] ~ " MIN" if bus_data['bus_stop_1'][0] > 0 else "ARR" }}{{ "*" if bus_data['bus_stop_1'][1] == "Estimated" else ""}}
+                {% set bus_stop_1_timing = bus_data['bus_stop_1'][0]%}
+                {{ (bus_stop_1_timing ~ " MIN" if bus_stop_1_timing > 0 else "ARR") if bus_stop_1_timing else "ERR" }}{{ "*" if bus_data['bus_stop_1'][1] == "Estimated" else ""}}
               </div>
               <div class="text-xl">FROM BISHAN</div>
             </div>
           </div>
+
+          <div class="mt-10 ">
+            <div class="text-6xl font-light text-center">
+              {{ weather_data["temperature"]}}
+            </div>
+            <div class="flex flex-wrap gap-5 mt-6 justify-center">
+              {% for timing, forecast in weather_data["periods"] %}
+              <div class="text-center">
+                <p class="text-7xl font-black">
+                  {{ forecast }}
+                </p>
+                <p class="text-xl uppercase">{{ timing }}</p>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
         </div>
+
     </div>
     </main>
     </div>
