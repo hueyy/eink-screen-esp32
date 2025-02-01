@@ -6,8 +6,9 @@ from flask_apscheduler import APScheduler  # type: ignore
 import os
 from typing import Final, Literal
 from datetime import datetime
-from server.render import render_dashboard_as_rgb, image_buffer_to_bytes  # type: ignore
+from server.render import render_dashboard, image_buffer_to_bytes  # type: ignore
 from server.eink import dither_image_data, convert_image_data_to_mono_red_hlsb  # type: ignore
+from server.utils import write_current_canvas, write_current_canvas_image
 
 app = Flask(__name__, static_folder=None)
 
@@ -30,9 +31,6 @@ HEADLINE_OPTIONS: Final[list[tuple[str, str]]] = [
     ("news.ycombinator.com", "https://news.ycombinator.com/rss"),
     ("bbc.com", "https://feeds.bbci.co.uk/news/rss.xml"),
 ]
-
-CURRENT_FILE_PATH = "server/static/current"
-CURRENT_FILE_IMAGE_PATH = "server/static/current.png"
 
 DEFAULT_MODE: str = "image"
 
@@ -72,25 +70,14 @@ def image():
 @app.route("/dashboard", methods=["GET"])
 def dashboard():
     mode = "dashboard"
-    rendered_dashboard: bytes = render_dashboard_as_rgb()
+    rendered_dashboard: bytes = render_dashboard()  # type: ignore
+    write_current_canvas_image(rendered_dashboard)
     write_current_canvas(
-        convert_image_data_to_mono_red_hlsb(dither_image_data(rendered_dashboard))
+        convert_image_data_to_mono_red_hlsb(
+            dither_image_data(image_buffer_to_bytes(rendered_dashboard), "ternary")
+        )
     )
     return catalog.render("DashboardModeScreen")
-
-
-def write_to_file(file_path: str, value: bytes | str):
-    open_mode = "w" if type(value) is str else "wb"
-    with open(file_path, open_mode) as file:
-        file.write(value)
-
-
-def write_current_canvas(value: bytes | str):
-    return write_to_file(CURRENT_FILE_PATH, value)
-
-
-def write_current_canvas_image(value: bytes):
-    return write_to_file(CURRENT_FILE_IMAGE_PATH, value)
 
 
 @app.route("/current", methods=["HEAD", "PUT"])
@@ -119,10 +106,16 @@ def clear_current():
 @app.route("/current_dashboard", methods=["GET"])
 def get_current_dashboard():
     now = datetime.now()
-    current_date = now.strftime("%I:%M %p")
-    current_time = now.strftime("%A, %B %d, %Y")
+    current_date = now.strftime("%u %B")
+    current_day_of_week = now.strftime("%a")
+    current_year = now.strftime("%Y")
+    current_time = now.strftime("%I:%M %p")
     return catalog.render(
-        "DashboardScreen", current_date=current_date, current_time=current_time
+        "DashboardScreen",
+        current_date=current_date,
+        current_time=current_time,
+        current_day_of_week=current_day_of_week,
+        current_year=current_year,
     )
 
 

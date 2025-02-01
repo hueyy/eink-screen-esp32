@@ -256,4 +256,23 @@
     }
   }
 
+  const loadInitialCanvas = () => new Promise((resolve) => {
+    const image = new Image()
+    image.src = "/static/current.png"
+    image.onload = async () => {
+      ctx.drawImage(
+        image,
+        0,
+        0,
+        image.width,
+        image.height,
+        0,
+        0,
+        image.width,
+        image.height,
+      )
+      resolve()
+    }
+  })
+
 </script>

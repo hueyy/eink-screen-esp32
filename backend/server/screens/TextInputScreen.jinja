@@ -31,6 +31,7 @@
       const text = document.getElementById("input_text").value
       const font = document.getElementById("input_font").value || "sans-serif"
 
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
       ctx.fillStyle = "black"
       ctx.font = `72px ${font}`
       ctx.fillText(text, 20, 80)
@@ -45,8 +46,8 @@
       }, "image/png")
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      updatePreview()
+    document.addEventListener("DOMContentLoaded", async () => {
+      await loadInitialCanvas()
     })
 
     const configRequest = (event) => {

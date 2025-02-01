@@ -5,33 +5,12 @@
     <Canvas />
 
     <script>
-      const canvas = document.getElementById("preview")
-      const ctx = canvas.getContext("2d")
 
-      const updatePreview = () => {
-        const text = document.getElementById("input_text").value
-        const font = document.getElementById("input_font").value || "sans-serif"
-
-        ctx.fillStyle = "black"
-        ctx.font = `72px ${font}`
-        ctx.fillText(text, 20, 80)
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        updatePreview()
+      document.addEventListener("DOMContentLoaded", async () => {
+        loadInitialCanvas()
+        window.setInterval(() => {
+          loadInitialCanvas()
+        }, 2000)
       })
-
-      const configRequest = (event, data) => {
-        if (typeof data === 'undefined') {
-          // use current imageData by default
-          const rawImageData = ctx.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT).data
-          const imageData = convertImageDataToMonoRedHLSB(rawImageData, CANVAS_WIDTH, CANVAS_HEIGHT)
-          event.detail.parameters['image_data'] = imageData
-        } else {
-          // if empty string specified
-          ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-          event.detail.parameters['image_data'] = ''
-        }
-      }
     </script>
 </BaseScreen>

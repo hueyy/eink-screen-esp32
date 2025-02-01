@@ -210,13 +210,7 @@ def dither_image_data(
                     if 0 <= x1 < CANVAS_WIDTH and 0 <= y1 < CANVAS_HEIGHT:
                         index1: int = 4 * (x1 + y1 * CANVAS_WIDTH)
                         for i in range(3):
-                            try:
-                                if index1 + 1 < len(image_data):
-                                    image_data[index1 + i] = int(
-                                        quant_error[i] * fraction
-                                    )
-                            except Exception as e:
-                                raise e
+                            image_data[index1 + i] = int(quant_error[i] * fraction)
             return bytes(image_data)
 
         case _:

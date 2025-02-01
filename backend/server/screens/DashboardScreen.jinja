@@ -1,4 +1,4 @@
-{# def current_time, current_date #}
+{# def current_time, current_date, current_day_of_week, current_year #}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,11 +11,19 @@
   </head>
 
   <body>
-    <div class="w-screen h-screen flex justify-center items-center">
-      <main class="w-[800px] h-[480px] border">
-        <p>{{current_date}}</p>
-        <p>{{current_time}}</p>
-      </main>
+    <div class="w-screen h-screen flex justify-center items-center font-[Fira_Sans]">
+      <main class="w-[800px] h-[480px] border flex">
+        <div class="flex flex-col justify-center items-center p-8 w-[50%]">
+
+          <div class="text-9xl font-light">{{current_day_of_week}}</div>
+          <div class="text-7xl font-black my-4">{{current_time}}</div>
+          <div class="text-4xl">{{current_date}}, {{ current_year }}</div>
+        </div>
+        <div class="w-[50%]">
+          Lorem ipsum
+        </div>
+    </div>
+    </main>
     </div>
   </body>
 

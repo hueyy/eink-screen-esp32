@@ -22,8 +22,3 @@ def image_buffer_to_bytes(image_buffer: bytes):
         img = img.convert("RGBA")
         # Get raw bytes
         return img.tobytes()
-
-
-def render_dashboard_as_rgb() -> bytes:
-    screenshot_buffer = render_dashboard()
-    return image_buffer_to_bytes(screenshot_buffer)

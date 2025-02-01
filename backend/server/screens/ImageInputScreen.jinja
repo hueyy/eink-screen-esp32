@@ -54,7 +54,7 @@
     <ActionButtons />
   </div>
   <script>
-    const updatePreview = async () => {
+    const updatePreview = () => {
       const files = document.getElementById("input_image").files
 
       if (files === null || files.length == 0) {
@@ -74,7 +74,7 @@
       const dithering = document.getElementById("image_dithering").value
 
 
-      image.onload = async () => {
+      image.onload = () => {
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
         ctx.save()
 
@@ -135,8 +135,8 @@
       }
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      updatePreview()
+    document.addEventListener("DOMContentLoaded", async () => {
+      await loadInitialCanvas()
     })
 
     const configRequest = async (event, data) => {
