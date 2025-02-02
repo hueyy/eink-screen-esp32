@@ -25,20 +25,25 @@ RUN apt-get update && apt-get install -y \
     curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list && \
     apt-get update && \
     apt-get install -y caddy && \
+    # install nodejs
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get update && \
+    apt-get install -y nodejs && \
     rm -rf /var/lib/apt/lists/* && \
-    # install tailwind
-    curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/download/v4.0.3/tailwindcss-linux-x64 && \
-    chmod +x tailwindcss-linux-x64 && \
-    mv tailwindcss-linux-x64 $HOME/.local/bin/tailwindcss
+    # install pnpm
+    npm install -g pnpm && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /srv
-COPY Caddyfile pnpm-lock.yaml poetry.lock pyproject.toml ./
-RUN $HOME/.local/bin/poetry add pytest-playwright && \
+COPY Caddyfile pnpm-lock.yaml poetry.lock pyproject.toml package.json pnpm-lock.yaml ./
+RUN pnpm install && \
+    $HOME/.local/bin/poetry add pytest-playwright && \
     $HOME/.local/bin/poetry install && \
     $HOME/.local/bin/poetry run playwright install --with-deps chromium
 COPY server ./server
 
-RUN $HOME/.local/bin/tailwindcss -i ./server/styles/main.css -o ./server/static/styles/main.css --minify
+RUN pnpm dlx @tailwindcss/cli -i ./server/styles/main.css -o ./server/static/styles/main.css --minify && \
+    cp -f node_modules/htmx.org/dist/htmx.min.js server/static/scripts/htmx.min.js
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 

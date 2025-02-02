@@ -1,6 +1,6 @@
 {#def class_name="", hx_put="", hx_include="", hx_on_config_request="", hx_on_confirm=""#}
 
-<button class="bg-indigo-700 text-white py-2 px-4 font-bold cursor-pointer {{class_name}}" type="button" {%- if hx_put -%}hx-put="{{ hx_put }}" {%- endif -%}
+<button class="bg-indigo-700 text-white py-2 px-4 font-bold cursor-pointer {{class_name}}" type="button" {%- if hx_put -%} hx-put="{{ hx_put }}" {%- endif -%}
   {%- if hx_include -%} hx-include="{{ hx_include }}" {%- endif -%} {%- if hx_on_config_request -%}
   hx-on:htmx:config-request="this.closest('form').classList.remove('htmx-error'); {{ hx_on_config_request }}" {%- endif -%} {%- if hx_on_confirm -%}
   hx-on:htmx:confirm="this.closest('form').classList.remove('htmx-error'); {{ hx_on_confirm }}" {%- endif -%}
