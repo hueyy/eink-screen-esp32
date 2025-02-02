@@ -1,6 +1,9 @@
 from playwright.sync_api import sync_playwright  # type: ignore
 from PIL import Image
 import io
+import os
+
+CADDY_PORT = os.environ.get("CADDY_PORT", "8000")
 
 
 def render_dashboard() -> bytes:
@@ -8,12 +11,19 @@ def render_dashboard() -> bytes:
     Returns screenshot as image buffer
     """
     with sync_playwright() as p:
-        browser = p.chromium.launch()
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page()
-        page.goto("http://localhost:8000/current_dashboard")
-        screenshot = page.locator("main").screenshot()
-        browser.close()
-        return screenshot
+        url = f"http://localhost:{CADDY_PORT}/current_dashboard"
+        print("Navigating to: ", url)
+        try:
+            page.goto(url)
+            screenshot = page.locator("main").screenshot()
+            return screenshot
+        except Exception as e:
+            print(f"Error taking screenshot: {e}")
+            raise e
+        finally:
+            browser.close()
 
 
 def image_buffer_to_bytes(image_buffer: bytes) -> bytes:

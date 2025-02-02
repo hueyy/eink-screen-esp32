@@ -1,0 +1,9 @@
+services:
+  eink-screen-esp32-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    ports:
+      - "${PORT:-8000}:8000"
+    restart: unless-stopped

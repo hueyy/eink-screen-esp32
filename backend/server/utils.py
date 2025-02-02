@@ -11,7 +11,7 @@ def write_to_file(file_path: str, value: bytes | str):
 
 
 def read_from_file(file_path: str):
-    open_mode = "w"
+    open_mode = "r"
     with open(file_path, open_mode) as file:
         return file.read()
 
