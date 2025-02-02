@@ -31,7 +31,7 @@ poetry install
 
 ```shell
 poetry shell
-mpflash list
+sh scripts/list_ports.sh
 ```
 
 Example output:
@@ -57,7 +57,7 @@ This uses [mpflash](https://github.com/Josverl/micropython-stubber/tree/main/src
 Proceed to install the new firmware:
 
 ```shell
-mpflash flash --board ESP32_GENERIC --serial ?
+sh scripts/flash_micropython.sh
 ```
 
 ### File structure
@@ -68,33 +68,16 @@ There are 2 main MicroPython scripts:
 - **main.py**: this is run immediately after `boot.py` runs and should contain your application code. You can import other dependencies in this file.
 
 
-### mpremote
-
-You can use [mpremote](https://docs.micropython.org/en/latest/reference/mpremote.html) to transfer code and use a REPL.
-
-Use <kbd>Ctrl</kbd><kbd>]</kbd> to exit the REPL.
-
-When developing, my preference is to use a `src/test.py` file:
-
-```bash
-mpremote mount src
-import test
-```a
-
-Use <kbd>Ctrl</kbd><kbd>D</kbd> to soft reload the device and remount the directory.
-
-You can use mpremote to transfer all the files later when deploying.
-
 ### RShell
 
-Alternatively, you can use [rshell](https://github.com/dhylands/rshell). Note that using both mpremote and RShell at the same time may cause issues and lead to the device freezing up.
+You can use [rshell](https://github.com/dhylands/rshell) to transfer your code to the MCU and get a REPL.
 
 ```bash
 poetry shell
 rshell
 ```
 
-And then within rshell's interactive prompt, connect to the device:
+And then within rshell's interactive prompt, connect to the device (if RShell doesn't automatically connect):
 
 ```bash
 connect serial /dev/ttyACM0
@@ -131,33 +114,17 @@ Useful development commands:
 
 ```bash
 ./scripts/flash_src.sh # to transfer and run new files in a single command
-./scripts/flash_src_full.sh # to transfer and run new files, removing old files and reinstalling dependencies
 ```
 
-### MicroPython dependencies
+## Secrets
 
-These have to be installed after the MicroPython framework has been flashed:
+Create a `mcu/src/lib/secrets.py` file based on the `secrets.sample.py` file. 
 
-```
-poetry run mpremote mip install github:miguelgrinberg/microdot/src/microdot.py 
-```
+## Reference
 
-The `./scripts/flash_src_full.sh` script automatically installs the MicroPython dependencies.
-
-### Assets
+For my own reference
 
 - **Fonts**: [peterhinch/micropython-font-to-py](https://github.com/peterhinch/micropython-font-to-py)
   - `./scripts/font-to-py.py -x input.ttf <font_size> out.py`
 - **Images**: [image2cpp](https://javl.github.io/image2cpp/)
-
-## Secrets
-
-Example:
-
-```
-secrets.py
-
-WIFI_NETWORKS = [("SSID", "PASSWORD")]
-
-AP_CREDENTIALS = ("SSID", "PASSWORD")
-```
+- `archive` folder

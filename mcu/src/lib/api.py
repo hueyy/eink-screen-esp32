@@ -1,8 +1,7 @@
 import usocket, ssl  # type: ignore
 from micropython import const  # type: ignore
 from lib.display import Display
-
-HOSTNAME = const("moving-blessed-wombat.ngrok-free.app")
+from lib.secrets import API_HOSTNAME
 
 CHUNK_SIZE = const(1000)  # 1KiB
 
@@ -29,7 +28,7 @@ def parse_headers(header_string: str):
 def compose_request(etag: str | None):
     headers = [
         "GET /static/current HTTP/1.1",
-        f"Host: {HOSTNAME}",
+        f"Host: {API_HOSTNAME}",
         "User-Agent: micropython-esp32-huey-eink-screen",
         "Accept-Encoding: identity",
     ]
@@ -44,7 +43,7 @@ def compose_request(etag: str | None):
 def fetch_screen(etag: str | None = None):
     try:
         # Hostname to IP adddress
-        socket_address = usocket.getaddrinfo(HOSTNAME, 443)[0][-1]
+        socket_address = usocket.getaddrinfo(API_HOSTNAME, 443)[0][-1]
 
         s = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
         s.connect(socket_address)

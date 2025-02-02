@@ -35,7 +35,7 @@ HEADLINE_OPTIONS: Final[list[tuple[str, str]]] = [
     ("bbc.com", "https://feeds.bbci.co.uk/news/rss.xml"),
 ]
 
-DEFAULT_MODE: str = "image"
+DEFAULT_MODE: str = "dashboard"
 
 # jinjax
 catalog = Catalog(
@@ -125,7 +125,6 @@ def re_render_dashboard() -> None:
 @app.route("/dashboard", methods=["GET"])
 def dashboard() -> str:
     db_set_mode("dynamic")
-    re_render_dashboard()
     return catalog.render("DashboardModeScreen")
 
 

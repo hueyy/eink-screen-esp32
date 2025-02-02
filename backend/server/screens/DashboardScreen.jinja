@@ -28,14 +28,14 @@
             <div>
               <div class="text-4xl font-bold">
                 {% set bus_stop_2_timing = bus_data['bus_stop_2'][0]%}
-                {{ (bus_stop_2_timing ~ " MIN" if bus_stop_2_timing else "ARR") if bus_stop_2_timing else "ERR" }}{{ "*" if bus_data['bus_stop_2'][1] == "Estimated" else ""}}
+                {{ (bus_stop_2_timing ~ " MIN" if bus_stop_2_timing > 0 else "ARR") if bus_stop_2_timing is not none else "ERR" }}{{ "*" if bus_data['bus_stop_2'][1] == "Estimated" else ""}}
               </div>
               <div class="text-xl">TO BISHAN</div>
             </div>
             <div>
               <div class="text-4xl font-bold">
                 {% set bus_stop_1_timing = bus_data['bus_stop_1'][0]%}
-                {{ (bus_stop_1_timing ~ " MIN" if bus_stop_1_timing > 0 else "ARR") if bus_stop_1_timing else "ERR" }}{{ "*" if bus_data['bus_stop_1'][1] == "Estimated" else ""}}
+                {{ (bus_stop_1_timing ~ " MIN" if bus_stop_1_timing > 0 else "ARR") if bus_stop_1_timing is not none else "ERR" }}{{ "*" if bus_data['bus_stop_1'][1] == "Estimated" else ""}}
               </div>
               <div class="text-xl">FROM BISHAN</div>
             </div>
