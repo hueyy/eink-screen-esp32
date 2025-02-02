@@ -4,6 +4,20 @@
 
     <Canvas />
 
+    <form class="mt-6">
+      <PrimaryButton hx_post="/dashboard">
+        <span class="htmx-indicator-default">
+          REFRESH
+        </span>
+        <span class="htmx-indicator">
+          REFRESHING...
+        </span>
+      </PrimaryButton>
+      <div class="mt-6 text-red-600 htmx-error-message">
+        <strong>Error</strong>: Failed to refresh dashboard
+      </div>
+    </form>
+
     <script>
 
       document.addEventListener("DOMContentLoaded", async () => {

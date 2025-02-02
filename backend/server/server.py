@@ -128,6 +128,13 @@ def dashboard() -> str:
     return catalog.render("DashboardModeScreen")
 
 
+@app.route("/dashboard", methods=["POST"])
+def refresh_dashboard() -> str:
+    db_set_mode("dynamic")
+    re_render_dashboard()
+    return "OK"
+
+
 # scheduled tasks
 @scheduler.task("interval", id="check_for_updates", seconds=120)
 def check_for_updates() -> str:

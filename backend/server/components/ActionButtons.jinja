@@ -1,5 +1,5 @@
 <form class="gap-4">
-  <PrimaryButton class_name="mr-4" hx_put="/current" hx_include="#image_data">
+  <PrimaryButton class_name="mr-4" hx_put="/current" hx_include="#image_data" hx_encoding="multipart/form-data">
     <span class="htmx-indicator-default">
       SUBMIT
     </span>
@@ -7,7 +7,7 @@
       LOADING...
     </span>
   </PrimaryButton>
-  <SecondaryButton hx-post="/clear" hx_on_config_request="configRequest(event);">
+  <SecondaryButton hx_post="/clear" hx_on_config_request="configRequest(event);" hx_encoding="multipart/form-data">
     <span class="htmx-indicator-default">
       CLEAR
     </span>
