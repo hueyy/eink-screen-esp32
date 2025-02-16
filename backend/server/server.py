@@ -12,6 +12,9 @@ from server.utils import write_current_canvas, write_current_canvas_image
 from server.bus import get_bus_data
 from server.nea import get_weather_forecast
 from server.db import db_get_mode, db_set_mode
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__, static_folder=None)
 

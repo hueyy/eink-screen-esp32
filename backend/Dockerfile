@@ -2,14 +2,17 @@ FROM python:3.13.1-bookworm
 
 ENV TZ="Asia/Singapore"
 
-RUN apt-get update && apt-get install -y \
+RUN curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg && \
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list && \
+    apt-get update && apt-get install -y \
     debian-keyring \
     debian-archive-keyring \
     apt-transport-https \
     curl \
     gnupg \
     tini \
-    pipx && \
+    pipx \
+    caddy && \
     # install Fira Sans
     mkdir -p /usr/share/fonts/truetype/fira && \
     curl -L https://github.com/mozilla/Fira/archive/refs/tags/4.202.zip -o fira.zip && \
@@ -20,16 +23,10 @@ RUN apt-get update && apt-get install -y \
     # install poetry
     pipx ensurepath && \
     pipx install poetry==1.8.4 && \
-    # install caddy
-    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg && \
-    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list && \
-    apt-get update && \
-    apt-get install -y caddy && \
     # install nodejs
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get update && \
     apt-get install -y nodejs && \
-    rm -rf /var/lib/apt/lists/* && \
     # install pnpm
     npm install -g pnpm && \
     rm -rf /var/lib/apt/lists/*
