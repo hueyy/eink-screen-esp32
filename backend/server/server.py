@@ -101,7 +101,7 @@ def clear_current():
 def get_current_dashboard():
     now = datetime.now()
     time_dict = dict(
-        current_date=now.strftime("%u %B"),
+        current_date=now.strftime("%-d %B"),
         current_day_of_week=now.strftime("%a"),
         current_year=now.strftime("%Y"),
         current_time=now.strftime("%I:%M %p"),
