@@ -260,10 +260,25 @@
     }
   }
 
-  const loadInitialCanvas = () => new Promise((resolve) => {
+  let canvasETag = ''
+
+  const loadInitialCanvas = () => new Promise(async (resolve) => {
+    const response = await fetch("/static/current.png", {
+      headers: canvasETag ? {
+        'If-None-Match': canvasETag
+      } : {}
+    })
+    const newETag = response.headers.get('ETag')
+    if (newETag && response.status === 200) {
+      canvasETag = newETag
+    }
+
+    const blob = await response.blob()
+    const imageUrl = URL.createObjectURL(blob)
+
     const image = new Image()
-    image.src = "/static/current.png"
-    image.onload = async () => {
+    image.src = imageUrl
+    image.onload = () => {
       ctx.drawImage(
         image,
         0,
