@@ -6,14 +6,14 @@ CURRENT_FILE_IMAGE_PATH: LiteralString = "server/static/current.png"
 
 
 def write_to_file(file_path: str, value: bytes | str):
-    logging.debug("write_to_file", file_path)
+    logging.debug("write_to_file %s", file_path)
     open_mode = "w" if type(value) is str else "wb"
     with open(file_path, open_mode) as file:
         file.write(value)
 
 
 def read_from_file(file_path: str):
-    logging.debug("read_from_file", file_path)
+    logging.debug("read_from_file %s", file_path)
     open_mode = "r"
     with open(file_path, open_mode) as file:
         return file.read()

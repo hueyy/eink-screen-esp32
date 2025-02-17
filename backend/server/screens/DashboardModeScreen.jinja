@@ -5,6 +5,15 @@
     <Canvas />
 
     <form class="mt-6">
+      <label class="block w-full mb-4">
+        <span class="block text-lg font-bold">Type</span>
+        <select class="bg-indigo-50 text-indigo-700 px-4 py-2 mt-2 hover:bg-indigo-100 cursor-pointer" name="dashboard_type" hx-post="/dashboard"
+          hx-swap="none">
+          {% for item in dashboard_types %}
+          <option>{{ item }}</option>
+          {% endfor %}
+        </select>
+      </label>
       <PrimaryButton hx_post="/dashboard">
         <span class="htmx-indicator-default">
           REFRESH
