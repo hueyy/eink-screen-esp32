@@ -49,7 +49,7 @@ def fetch_screen(etag: str | None = None):
         s.connect(socket_address)
         s.settimeout(60)
 
-        ssl_socket = ssl.wrap_socket(s)  # type: ignore
+        ssl_socket = ssl.wrap_socket(s, server_hostname=API_HOSTNAME)  # type: ignore
 
         request = compose_request(etag)
         print("Making request: ")
