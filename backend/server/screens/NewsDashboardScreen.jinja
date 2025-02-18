@@ -12,20 +12,21 @@
 
   <body>
     <div class="w-screen h-screen flex justify-center items-center font-[Fira_Sans]">
-      <main class="w-[800px] h-[480px] border flex">
-        <div class="flex flex-col justify-center items-center p-6 w-[30%]">
-
-          <div class="text-6xl font-light">{{time_dict['current_day_of_week']}}</div>
-          <div class="text-4xl font-black my-4">{{time_dict['current_time']}}</div>
-          <div class="text-2xl">{{time_dict['current_date']}}, {{ time_dict['current_year'] }}</div>
+      <main class="w-[800px] h-[480px] border flex flex-col">
+        <div class="flex flex-row justify-center items-center py-4 px-6 gap-4">
+          <div class="text-4xl font-light">{{time_dict['current_day_of_week']}}</div>
+          <div class="text-3xl font-black">{{time_dict['current_time']}}</div>
+          <div class="text-3xl">{{time_dict['current_date']}}, {{ time_dict['current_year'] }}</div>
         </div>
-        <div class="flex flex-col justify-center p-6 w-[70%] gap-2">
+        <div class="flex flex-col justify-evenly pb-4 px-6 w-full h-full gap-1">
           {% for item in news_items %}
-          <div class="text-2xl line-clamp-2">
-            {{ item['title'] }}
+          <div class="flex items-center text-2xl leading-none gap-2">
+            <div class="line-clamp-2">
+              {{ item['title'] }}
+            </div>
+            <small>({{ item['timestamp_human'] }})</small>
           </div>
           {% endfor %}
-
         </div>
 
     </div>

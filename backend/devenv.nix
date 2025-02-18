@@ -1,4 +1,10 @@
-{ pkgs, lib, config, inputs, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  inputs,
+  ...
+}:
 
 {
   packages = [
@@ -62,7 +68,7 @@
         }
       }
 
-      :8000 {
+      :${config.env.CADDY_PORT} {
         handle_path /healthcheck {
           respond "OK"
         }
@@ -74,6 +80,9 @@
         }
 
         handle /static/* {
+          basic_auth {
+            ${config.env.CADDY_USER} ${config.env.CADDY_PASSWORD_HASH}
+          }
           encode zstd gzip
           uri strip_prefix /static
           root server/static
@@ -81,6 +90,9 @@
         }
 
         handle {
+          basic_auth {
+            ${config.env.CADDY_USER} ${config.env.CADDY_PASSWORD_HASH}
+          }
           encode zstd gzip
           reverse_proxy localhost:5000
         }

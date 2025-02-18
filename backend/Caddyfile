@@ -4,7 +4,7 @@
 	}
 }
 
-:8000 {
+:{$CADDY_PORT} {
 	handle_path /healthcheck {
 		respond "OK"
 	}
@@ -16,6 +16,9 @@
 	}
 
 	handle /static/* {
+		basic_auth {
+			{$CADDY_USER} {$CADDY_PASSWORD_HASH}
+		}
 		encode zstd gzip
 		uri strip_prefix /static
 		root server/static
@@ -23,6 +26,9 @@
 	}
 
 	handle {
+		basic_auth {
+			{$CADDY_USER} {$CADDY_PASSWORD_HASH}
+		}
 		encode zstd gzip
 		reverse_proxy localhost:5000
 	}
