@@ -151,7 +151,25 @@ def refresh_dashboard() -> str:
     if dashboard_type and dashboard_type in get_args(DashboardType):
         db_set_dashboard_type(dashboard_type)  # type: ignore
     db_set_mode("dynamic")
-    re_render_dashboard()
+
+    from threading import Thread, Event
+
+    done = Event()
+
+    def wrapped_re_render():
+        try:
+            re_render_dashboard()
+        except Exception as e:
+            logging.error(e)
+        finally:
+            done.set()
+
+    thread = Thread(target=wrapped_re_render)
+    thread.daemon = True
+    thread.start()
+
+    done.wait(timeout=10)
+
     return "OK"
 
 
@@ -165,10 +183,11 @@ def check_for_updates() -> str:
     return "OK"
 
 
-if __name__ == "__main__":
-    scheduler.init_app(app)
-    scheduler.start()
+# Scheduler should initialise when running via gunicorn
+scheduler.init_app(app)
+scheduler.start()
 
+if __name__ == "__main__":
     if os.environ.get("DEBUG") == "True":
         app.config["SCHEDULER_API_ENABLED"] = True
         app.run(debug=True, use_debugger=True, use_reloader=True)
