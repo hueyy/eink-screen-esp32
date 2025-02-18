@@ -46,4 +46,4 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "caddy run & $HOME/.local/bin/poetry run gunicorn -w 2 -b localhost:5000 server.server:app --access-logfile -"]
+CMD ["sh", "-c", "caddy run & $HOME/.local/bin/poetry run gunicorn -w 1 -b localhost:5000 server.server:app --access-logfile -"]
