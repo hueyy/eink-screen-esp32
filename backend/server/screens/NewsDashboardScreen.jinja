@@ -11,23 +11,25 @@
   </head>
 
   <body>
-    <div class="w-screen h-screen flex justify-center items-center font-[Fira_Sans]">
-      <main class="w-[800px] h-[480px] border flex flex-col justify-evenly gap-1 py-2 px-6">
-        {% for item in news_items %}
-        <div class="flex justify-between items-center text-2xl leading-none gap-2">
-          <div class="line-clamp-2">
-            {{ item['title'] }}
+    <div class="w-screen h-screen flex justify-center items-center">
+      <main class="w-[800px] h-[480px] border flex flex-col font-[Fira_Sans]">
+        <div class="flex flex-col justify-evenly gap-1 py-2 px-4 grow">
+          {% for item in news_items %}
+          <div class="flex justify-between items-center text-2xl leading-none gap-2">
+            <div class="line-clamp-2 font-semibold">
+              {{ item['title'] }}
+            </div>
+            <small class="flex-none">({{ item['timestamp_human'] }} ago)</small>
           </div>
-          <small>({{ item['timestamp_human'] }})</small>
+          {% endfor %}
         </div>
-        {% endfor %}
-        <div class="flex flex-row justify-between items-center ">
-          <div class="text-4xl font-light">{{time_dict['current_day_of_week']}}, {{time_dict['current_date']}}, {{ time_dict['current_year'] }}</div>
-          <div class="text-4xl font-black">{{time_dict['current_time']}}</div>
+        <div class="flex flex-row justify-between items-center bg-black text-white font-black py-2 px-4">
+          <div class="text-4xl">{{time_dict['current_day_of_week']}}, {{time_dict['current_date']}}, {{ time_dict['current_year'] }}</div>
+          <div class="text-4xl">{{time_dict['current_time']}}</div>
         </div>
     </div>
     </main>
     </div>
   </body>
 
-</html>
+</html>r

@@ -21,6 +21,8 @@ from server.db import (
 from server.rss import parse_news_feeds_urls
 import logging
 
+IS_PRODUCTION = os.environ.get("DEBUG") == "True"
+
 logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__, static_folder=None)
@@ -47,7 +49,9 @@ catalog = Catalog(
         "current_path": lambda: request.path,
         "nav_items": NAV_ITEMS,
         "dashboard_types": get_args(DashboardType),
-    }
+    },
+    auto_reload=(not IS_PRODUCTION),
+    use_cache=IS_PRODUCTION,
 )
 catalog.add_folder("server/screens")
 catalog.add_folder("server/components")
@@ -188,7 +192,7 @@ scheduler.init_app(app)
 scheduler.start()
 
 if __name__ == "__main__":
-    if os.environ.get("DEBUG") == "True":
+    if not IS_PRODUCTION:
         app.config["SCHEDULER_API_ENABLED"] = True
         app.run(debug=True, use_debugger=True, use_reloader=True)
     else:

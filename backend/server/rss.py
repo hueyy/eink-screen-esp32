@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from typing import TypedDict, List
 import logging
 import time
+from zoneinfo import ZoneInfo
 
 
 class FeedEntry(TypedDict):
@@ -32,6 +33,19 @@ def format_relative_time(dt: datetime) -> str:
     return f"{days}d"
 
 
+def parse_timestamp(entry, feed_url: str) -> datetime:
+    timestamp = datetime(*entry.published_parsed[:6])
+    if feed_url == "https://mothership.sg/feed/":
+        # mothership.sg provides timestamps without any timezone info
+        # but we know that the timestamps are in the Singapore timezone
+        timestamp = timestamp.replace(tzinfo=ZoneInfo("Asia/Singapore"))
+
+    elif timestamp.tzinfo is None:
+        timestamp = timestamp.replace(tzinfo=timezone.utc)
+
+    return timestamp
+
+
 async def parse_feed_url(feed_url: str) -> List[FeedEntry]:
     async with aiohttp.ClientSession() as session:
         logging.debug("parse_feed_url: %s", feed_url)
@@ -41,13 +55,9 @@ async def parse_feed_url(feed_url: str) -> List[FeedEntry]:
             items: List[FeedEntry] = [
                 dict(
                     title=entry.title.strip(),
-                    timestamp=datetime(*entry.published_parsed[:6]).replace(
-                        tzinfo=timezone.utc
-                    ),
+                    timestamp=parse_timestamp(entry, feed_url),
                     timestamp_human=format_relative_time(
-                        datetime(*entry.published_parsed[:6]).replace(
-                            tzinfo=timezone.utc
-                        ),
+                        parse_timestamp(entry, feed_url),
                     ),
                 )
                 for entry in feed.entries
