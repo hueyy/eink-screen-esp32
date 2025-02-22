@@ -2,6 +2,7 @@ import requests
 from datetime import datetime
 from typing import Literal, Final
 import os
+import logging
 
 LTA_API_URL: Final[str] = (
     "https://datamall2.mytransport.sg/ltaodataservice/v3/BusArrival"
@@ -32,7 +33,6 @@ def get_bus_arrival_timings(
         response.raise_for_status()
 
         data = response.json()
-        print(data)
 
         if data["Services"] and len(data["Services"]) > 0:
             next_bus = data["Services"][0]["NextBus"]
@@ -45,10 +45,10 @@ def get_bus_arrival_timings(
         else:
             return None, None
     except requests.exceptions.RequestException as e:
-        print(f"Error making request: {e}")
+        logging.error(f"Error making request: {e}")
         return None, None
     except KeyError as e:
-        print(f"Error parsing response: {e}")
+        logging.error(f"Error parsing response: {e}")
         return None, None
 
 

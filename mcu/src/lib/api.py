@@ -150,6 +150,7 @@ def fetch_screen(etag: str | None = None):
             if not clear_screen:
                 print("Updating screen")
                 d.epd.turn_on_display()
+                d.epd.sleep()
 
     except Exception as e:
         raise e

@@ -1,0 +1,56 @@
+{# def time_dict, observation #}
+
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iNaturalistDashboardScreen</title>
+    <link rel="stylesheet" href="/static/styles/main.css">
+  </head>
+
+  <body>
+    <div class="w-screen h-screen flex justify-center items-center">
+      <main class="w-[800px] h-[480px] border flex flex-row font-[Fira_Sans]">
+
+        <div class="flex flex-col justify-between grow">
+          <div class="flex flex-col justify-center items-center p-6 grow">
+            <div class="text-9xl font-light">{{time_dict['current_day_of_week']}}</div>
+            <div class="text-7xl font-black my-4">{{time_dict['current_time']}}</div>
+            <div class="text-4xl">{{time_dict['current_date']}}, {{ time_dict['current_year'] }}</div>
+          </div>
+
+          <div class="w-full p-2 bg-black text-white bottom-0">
+            <div>
+              <strong>
+                {%- if observation['common_name'] and observation['scientific_name'] -%}
+                {{ observation['common_name'] }} (<em>{{ observation['scientific_name'] }}</em>)
+                {%- elif observation['scientific_name'] and not observation['common_name'] -%}
+                <em>{{ observation['scientific_name'] }}</em>
+                {%- else -%}
+                {{ observation['common_name'] }}
+                {%- endif -%}
+              </strong>
+            </div>
+            {%- if observation['timestamp'] -%}
+            <div>{{ observation['timestamp'] }}</div>
+            {%- endif -%}
+            {%- if observation['location'] -%}
+            <div>{{ observation['location'] }}</div>
+            {%- endif -%}
+            {%- if observation['licence_str'] -%}
+            {{ observation['licence_str'] }}
+            {%- endif -%}
+          </div>
+        </div>
+
+        <img class="h-full aspect-square object-cover flex-none" src="{{ observation['photo_url'] }}" />
+    </div>
+
+
+    </main>
+    </div>
+  </body>
+
+</html>

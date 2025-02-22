@@ -6,7 +6,7 @@ JSON_FILE: LiteralString = "server/db.json"
 
 Mode = Literal["static", "dynamic"]
 
-DashboardType = Literal["Home", "News"]
+DashboardType = Literal["Home", "News", "iNaturalist"]
 
 
 class Db(TypedDict):

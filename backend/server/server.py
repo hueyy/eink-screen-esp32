@@ -19,9 +19,10 @@ from server.db import (
     DashboardType,
 )
 from server.rss import parse_news_feeds_urls
+from server.inaturalist import get_random_observation
 import logging
 
-IS_PRODUCTION = os.environ.get("DEBUG") == "True"
+IS_PRODUCTION = not os.environ.get("DEBUG", "").strip() == "True"
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -122,6 +123,27 @@ async def get_current_dashboard():
             bus_data=bus_data,
             weather_data=weather_data,
         )
+    if dashboard_type == "iNaturalist":
+        now = datetime.now()
+        hour = now.strftime("%H")
+        minutes = now.minute
+        fraction = (
+            "00"
+            if (minutes < 7 or minutes > 52)
+            else "¼" if minutes <= 15 else "½" if minutes <= 30 else "¾"
+        )
+        time_dict = dict(
+            current_date=now.strftime("%-d %b"),
+            current_day_of_week=now.strftime("%a"),
+            current_year=now.strftime("%Y"),
+            current_time=f"{hour}:{fraction}",
+        )
+        observation = get_random_observation()
+        return catalog.render(
+            "iNaturalistDashboard",
+            time_dict=time_dict,
+            observation=observation,
+        )
     else:
         now = datetime.now()
         time_dict = dict(
@@ -136,12 +158,27 @@ async def get_current_dashboard():
         )
 
 
+last_quarter = None
+
+
 def re_render_dashboard() -> None:
-    rendered_dashboard: bytes = render_dashboard()
+    global last_quarter
 
     dashboard_type = db_get_dashboard_type()
+    current_quarter = datetime.now().minute // 15
+
+    if dashboard_type == "iNaturalist" and current_quarter == last_quarter:
+        # same quarter, do nothing
+        return
+
+    last_quarter = current_quarter
+
+    rendered_dashboard: bytes = render_dashboard()
+
     dither_image_mode: DitherMode = (
-        "floydSteinbergRed" if dashboard_type == "Home" else "ternary"
+        "floydSteinbergRed"
+        if dashboard_type == "Home" or dashboard_type == "iNaturalist"
+        else "ternary"
     )
 
     dithered_dashboard = dither_image_data(
@@ -186,7 +223,7 @@ def refresh_dashboard() -> str:
 
 
 # scheduled tasks
-@scheduler.task("interval", id="check_for_updates", seconds=120)
+@scheduler.task("interval", id="check_for_updates", seconds=300)
 def check_for_updates() -> str:
     mode = db_get_mode()
     print("Checking for updates: ", mode)

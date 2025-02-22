@@ -76,6 +76,9 @@ TCON_RESOLUTION = const(0x61)
 # AUTO_MEASUREMENT_VCOM          = const(0x80)
 # READ_VCOM_VALUE                = const(0x81)
 VCM_DC_SETTING = const(0x82)
+PARTIAL_WINDOW = const(0x90)
+PARTIAL_IN = const(0x91)
+PARTIAL_OUT = const(0x92)
 FLASH_MODE = const(0xE5)
 
 BUSY = const(0)  # 0=busy, 1=idle
@@ -109,11 +112,16 @@ class EPD:
         self.spi.write(
             data
             if isinstance(data, bytearray) or isinstance(data, bytes)
-            else bytearray(data)
-            if isinstance(data, list)
-            else bytearray([data])
+            else bytearray(data) if isinstance(data, list) else bytearray([data])
         )
         self.cs(1)
+
+    def begin_partial_update(self):
+        self.send_command(PARTIAL_IN)
+        self.send_command(PARTIAL_WINDOW)
+
+    def end_partial_update(self):
+        self.send_command(PARTIAL_OUT)
 
     def turn_on_display(self):
         self.send_command(DISPLAY_REFRESH)
