@@ -70,17 +70,25 @@ async def parse_feeds_urls(feed_urls: list[str]) -> List[List[FeedEntry]]:
     return await asyncio.gather(*tasks)
 
 
+def include_in_feed(entry: FeedEntry):
+    if not entry["timestamp"]:
+        return False
+
+    if entry["title"].startswith("ADV:"):
+        return False
+
+    if entry["title"].startswith("/r/WorldNews"):
+        return False
+
+    return True
+
+
 async def parse_news_feeds_urls() -> List[FeedEntry]:
     feed_urls = os.environ.get("RSS_NEWS")
     if feed_urls and len(feed_urls) > 0:
         feeds = await parse_feeds_urls(feed_urls.split(","))
         results = sorted(
-            [
-                entry
-                for feed in feeds
-                for entry in feed
-                if entry["timestamp"] and not entry["title"].startswith("ADV:")
-            ],
+            [entry for feed in feeds for entry in feed if include_in_feed(entry)],
             key=lambda x: x["timestamp"],
             reverse=True,
         )

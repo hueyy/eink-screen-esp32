@@ -7,7 +7,7 @@ import os
 from typing import Final, get_args
 from datetime import datetime
 from server.render import render_dashboard, image_buffer_to_bytes, bytes_to_image_buffer
-from server.eink import dither_image_data, convert_image_data_to_mono_red_hlsb  # type: ignore
+from server.eink import dither_image_data, convert_image_data_to_mono_red_hlsb, DitherMode  # type: ignore
 from server.utils import write_current_canvas, write_current_canvas_image
 from server.bus import get_bus_data
 from server.nea import get_weather_forecast
@@ -138,7 +138,15 @@ async def get_current_dashboard():
 
 def re_render_dashboard() -> None:
     rendered_dashboard: bytes = render_dashboard()
-    dithered_dashboard = dither_image_data(image_buffer_to_bytes(rendered_dashboard))
+
+    dashboard_type = db_get_dashboard_type()
+    dither_image_mode: DitherMode = (
+        "floydSteinbergRed" if dashboard_type == "Home" else "ternary"
+    )
+
+    dithered_dashboard = dither_image_data(
+        image_buffer_to_bytes(rendered_dashboard), dither_image_mode
+    )
     write_current_canvas_image(bytes_to_image_buffer(dithered_dashboard))
     write_current_canvas(convert_image_data_to_mono_red_hlsb(dithered_dashboard))
 

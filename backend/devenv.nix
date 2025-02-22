@@ -79,10 +79,12 @@
           file_server
         }
 
+        handle /current_dashboard {
+          encode zstd gzip
+          reverse_proxy localhost:5000
+        }
+
         handle /static/* {
-          basic_auth {
-            ${config.env.CADDY_USER} ${config.env.CADDY_PASSWORD_HASH}
-          }
           encode zstd gzip
           uri strip_prefix /static
           root server/static

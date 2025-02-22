@@ -1,5 +1,6 @@
 import math
 from typing import Final, Literal
+import logging
 
 CANVAS_WIDTH: Final[int] = 800
 CANVAS_HEIGHT: Final[int] = 480
@@ -112,7 +113,7 @@ def dither_image_data(
     # Buffer should contain a 1-dimensional array of integers from 0-255
     # in the RGBA format, representing pixels proceeding from left to
     # right and then downwards
-
+    logging.debug(f"dither_image_data: {dither_mode}")
     image_data: list[int] = list(raw_image_data)
     match dither_mode:
         # TODO: Bill Atkinson dithering and Riemersma dithering?

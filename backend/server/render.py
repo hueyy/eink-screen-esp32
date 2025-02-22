@@ -16,7 +16,7 @@ def render_dashboard() -> bytes:
         url = f"http://localhost:{CADDY_PORT}/current_dashboard"
         print("Navigating to: ", url)
         try:
-            page.goto(url)
+            page.goto(url, timeout=10000)
             screenshot = page.locator("main").screenshot()
             return screenshot
         except Exception as e:
