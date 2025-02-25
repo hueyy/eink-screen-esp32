@@ -130,7 +130,7 @@ async def get_current_dashboard():
         fraction = (
             "00"
             if (minutes < 7 or minutes > 52)
-            else "¼" if minutes <= 15 else "½" if minutes <= 30 else "¾"
+            else "¼" if minutes <= 22 else "½" if minutes <= 37 else "¾"
         )
         time_dict = dict(
             current_date=now.strftime("%-d %b"),
