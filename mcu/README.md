@@ -9,7 +9,7 @@ The chip is ESP32-D0WDQ6 (revision v1.0), i.e. [ESP32 driver board from Waveshar
 - SRAM size: 520KB
 - ROM size: 448KB
 
-The screen is a Waveshare [7.5inch_e-Paper_HAT_(B)](https://www.waveshare.com/wiki/7.5inch_e-Paper_HAT_(B)).
+The screen is a Waveshare [7.5inch_e-Paper (B)](https://www.waveshare.com/wiki/7.5inch_e-Paper_HAT_(B)_Manual#Introduction).
 
 ## Development
 

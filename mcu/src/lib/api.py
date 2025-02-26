@@ -67,6 +67,10 @@ def fetch_screen(etag: str | None = None):
 
         d = Display()
 
+        # to address some odd bug
+        d.epd.clear()
+        d.epd.reset()
+
         while True:
             chunk = ssl_socket.read(CHUNK_SIZE)
 
@@ -150,7 +154,6 @@ def fetch_screen(etag: str | None = None):
             if not clear_screen:
                 print("Updating screen")
                 d.epd.turn_on_display()
-                d.epd.sleep()
 
     except Exception as e:
         raise e

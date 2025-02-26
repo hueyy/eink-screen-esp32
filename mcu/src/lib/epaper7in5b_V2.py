@@ -51,6 +51,7 @@ DATA_START_TRANSMISSION_1 = const(0x10)  # for black data
 DISPLAY_REFRESH = const(0x12)
 DATA_START_TRANSMISSION_2 = const(0x13)  # for red data
 # IMAGE_PROCESS                  = const(0x13)
+DUAL_SPI = const(0x15)
 # LUT_FOR_VCOM                   = const(0x20)
 # LUT_BLUE                       = const(0x21)
 # LUT_WHITE                      = const(0x22)
@@ -82,6 +83,11 @@ PARTIAL_OUT = const(0x92)
 FLASH_MODE = const(0xE5)
 
 BUSY = const(0)  # 0=busy, 1=idle
+
+# see page 19: https://files.waveshare.com/upload/2/29/7.5inch_e-paper-b-Specification.pdf
+# CDI_BLACK_BORDER=const()
+CDI_RED_BORDER = const(0x77)
+CDI_WHITE_BORDER = const(0x17)
 
 
 class EPD:
@@ -137,7 +143,8 @@ class EPD:
         self.wait_until_idle()
         self.send_command(PLL_CONTROL, 0x3C)
         self.send_command(TEMPERATURE_CALIBRATION, 0x00)
-        self.send_command(VCOM_AND_DATA_INTERVAL_SETTING, 0x77)
+        # self.send_command(DUAL_SPI, 0x00)
+        self.send_command(VCOM_AND_DATA_INTERVAL_SETTING, CDI_WHITE_BORDER)
         self.send_command(TCON_SETTING, 0x22)
         self.send_command(TCON_RESOLUTION, ustruct.pack(">HH", EPD_WIDTH, EPD_HEIGHT))
         self.send_command(VCM_DC_SETTING, 0x1E)  # decide by LUT file
