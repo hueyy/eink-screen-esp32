@@ -3,10 +3,10 @@ def init():
     from lib.wifi import connect_to_wifi
 
     wifi = connect_to_wifi()
-    if not wifi:
-        from lib.wifi import activate_wifi_captive_portal
+    # if not wifi:
+    #     from lib.wifi import activate_wifi_captive_portal
 
-        activate_wifi_captive_portal()
+    #     activate_wifi_captive_portal()
 
     from lib.api import fetch_screen
 

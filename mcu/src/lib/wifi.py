@@ -51,6 +51,7 @@ def connect_to_wifi() -> bool:
     except StopIteration:
         # no known network found
         print("No known networks in range")
+        wlan.active(False)
         return False
 
     print("Connecting to: ", known_network)
@@ -85,12 +86,15 @@ def activate_ap():
 
     from lib.secrets import AP_CREDENTIALS
 
+    ap.active(True)
     ap.config(
-        ssid=AP_CREDENTIALS[0], key=AP_CREDENTIALS[1], security=network.AUTH_WPA2_PSK
+        ssid=AP_CREDENTIALS[0],
+        key=AP_CREDENTIALS[1],
+        security=network.AUTH_WPA2_PSK,
     )
     ap.ifconfig(("192.168.10.1", "255.255.255.0", "192.168.10.1", "192.168.10.1"))
     ap.config(max_clients=3)
-    ap.active(True)
+
     return ap
 
 
@@ -100,7 +104,6 @@ def deactivate_ap(ap):
 
 
 def activate_wifi_captive_portal():
-    import uasyncio as asyncio
     from lib.wifi import activate_ap
 
     activate_ap()
