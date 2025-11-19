@@ -72,6 +72,8 @@ There are 2 main MicroPython scripts:
 
 You can use [rshell](https://github.com/dhylands/rshell) to transfer your code to the MCU and get a REPL.
 
+On NixOS: https://search.nixos.org/packages?channel=25.05&query=rshell
+
 ```bash
 poetry shell
 rshell

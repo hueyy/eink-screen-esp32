@@ -16,9 +16,7 @@ freetype-py = "^2.5.1"
 mpremote = "^1.26.1"
 mypy = "^1.18.2"
 black = "^25.11.0"
-rshell = "^0.0.36"
 mpflash = "^1.26.6"
-pyudev = "^0.24.4"
 
 [build-system]
 requires = ["poetry-core"]
